@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PageTitle from "../components/PageTitle.jsx";
+import "../styles/subjects.css";
 
 export default function Subjects() {
 
     return (
-        <main id="main-body" className="container">
+        <main id="subjects-body" className="container">
+            <PageTitle title="All Subjects | StudyGo" />
             <aside id="subjects-filter-holder">
                 <form id="subjects-search-form">
                     <label htmlFor="subjects-search">Search Subjects</label>

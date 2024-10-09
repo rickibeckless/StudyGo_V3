@@ -1,5 +1,5 @@
 export const isValidSubject = async (subjectId) => {
-    const res = await fetch(`/api/subjects/${subjectId}`);
+    const res = await fetch(`/api/validate/subject/${subjectId}`);
     if (res.ok) {
         return true;
     }
@@ -7,7 +7,7 @@ export const isValidSubject = async (subjectId) => {
 };
 
 export const isValidClass = async (subjectId, classId) => {
-    const res = await fetch(`/api/classes/${subjectId}/${classId}`);
+    const res = await fetch(`/api/validate/class/${subjectId}/${classId}`);
     if (res.ok) {
         return true;
     }
@@ -15,7 +15,7 @@ export const isValidClass = async (subjectId, classId) => {
 };
 
 export const isValidUnit = async (subjectId, classId, unitId) => {
-    const res = await fetch(`/api/classes/${subjectId}/${classId}/${unitId}`);
+    const res = await fetch(`/api/validate/unit/${subjectId}/${classId}/${unitId}`);
     if (res.ok) {
         return true;
     }

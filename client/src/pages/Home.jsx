@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PageTitle from "../components/PageTitle.jsx";
 import "../styles/home.css";
+import LoadingScreen from "../components/LoadingScreen.jsx";
 
 export default function Home() {
     const handleButtonClick = () => {
@@ -49,8 +50,13 @@ export default function Home() {
             <section id="home-subjects-section">
                 <h2>Top 5 Subjects</h2>
                 <ul id="home-subject-list">
+                    {subjects === null && <LoadingScreen />}
+
                     {subjects.length === 0 ? (
-                        <li id="default-li">Nothing yet! <a href="#">Add some subjects</a> to get started!</li>
+                        <>
+                            <li id="default-li">Nothing yet! <a href="#">Add some subjects</a> to get started!</li>
+                            <LoadingScreen />
+                        </>
                     ) : (
                         subjects.map(subject => (
                             <Subject
@@ -73,6 +79,12 @@ function Subject({ subject, classes }) {
     const toggleClasses = () => {
         setShowClasses(!showClasses);
         setShowDescription(!showDescription);
+    };
+
+    if (!classes) {
+        return (
+            <LoadingScreen />
+        );
     };
 
     return (

@@ -12,7 +12,7 @@ app.use('/api/classes', classesRoutes);
 app.use('/api/subjects', subjectsRoutes);
 app.use('/api/units', unitsRoutes);
 app.use('/api/topics', topicsRoutes);
-app.use('/validate', urlRoutes);
+app.use('/api/validate', urlRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on 'http://localhost:${PORT}'`);

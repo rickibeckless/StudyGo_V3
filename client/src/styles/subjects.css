@@ -132,7 +132,7 @@ input[type="checkbox"]:focus + .custom-checkbox {
 }
 
 /* MAIN BODY STYLES */
-#main-body {
+#subjects-body {
     padding: 0 2rem;
     display: grid;
     grid-template-columns: auto 1fr;
@@ -299,7 +299,7 @@ li.unit-item-holder {
 /* MEDIA QUERIES */
 
 @media (max-width: 800px) {
-    #main-body {
+    #subjects-body {
         grid-template-columns: 1fr;
     }
 
@@ -309,7 +309,7 @@ li.unit-item-holder {
         top: 0;
     }
     
-    #main-body,
+    #subjects-body,
     .subject,
     .subject-description,
     #subjects-section {

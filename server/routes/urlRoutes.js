@@ -36,6 +36,8 @@ async function isValidUnit(subjectId, classId, unitId) {
     return true;
 };
 
+// /api/validate
+
 router.get('/subject/:subjectId', async (req, res) => {
     const { subjectId } = req.params;
     const validSubject = await isValidSubject(subjectId);
