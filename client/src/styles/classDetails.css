@@ -1,0 +1,211 @@
+#main-body {
+    padding: 0 2rem;
+}
+
+#class-section {
+    padding: 2rem;
+}
+
+#class-header {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 2vh;
+}
+
+#class-header h2 {
+    font-size: 1.5rem;
+    color: #333333;
+    text-align: center;
+}
+
+#class-header #class-description {
+    font-size: 1.3rem;
+    color: #666666;
+    text-align: center;
+    font-style: italic;
+}
+
+#class-stats-holder {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: center;
+    align-items: center;
+}
+
+#class-stats-holder p {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5vh;
+    font-size: 1.1rem;
+    color: #333333;
+}
+
+#class-stats-holder p span {
+    font-weight: bold;
+    color: #0073e6;
+}
+
+.unit-holder {
+    border-bottom: 0.1rem solid #dddddd;
+    padding: 2rem;
+    max-width: 80vw;
+    margin: 2vh auto;
+    box-shadow: 3px 5px 5px #0000001a;
+}
+
+.unit-holder li {
+    list-style-type: none;
+}
+
+.unit-holder .unit-name {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #333333;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    margin: 2vh 0 3vh;
+}
+
+.unit-holder .unit-name:hover {
+    color: #0073e6;
+}
+
+.unit-holder .unit-description {
+    font-size: 1rem;
+    color: #383838;
+    font-style: italic;
+
+    padding: 1vw 4vw;
+    margin: 0 5vw;
+
+    border-left: 4px solid #0073e69e;
+    border-right: 4px solid #0073e69e;
+    border-radius: 5px;
+    background-color: #f0f0f09c;
+
+    transition: all 0.2s;
+}
+
+.unit-holder .unit-description:hover {
+    border-left: 5px solid #0073e6;
+    border-right: 5px solid #0073e6;
+    border-radius: 10px;
+    background-color: #f0f0f0;
+}
+
+.topic-list {
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 2vh;
+}
+
+.topic-list .topic-holder {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.topic-holder .topic-name {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 1.3rem;
+    color: #333333;
+    font-weight: 500;
+}
+
+.topic-holder .topic-name:hover,
+.lesson-holder .lesson-name:hover {
+    color: #0073e6;
+}
+
+.topic-holder .topic-description {
+    font-size: 1rem;
+    color: #383838;
+    font-style: italic;
+}
+
+.topic-holder .topic-name,
+.topic-holder .topic-description,
+.lesson-holder .lesson-description,
+.lesson-holder .lesson-name {
+    transition: all 0.2s;
+}
+
+.topic-holder .topic-description:hover,
+.lesson-holder .lesson-description:hover {
+    border-left: 5px solid #0073e6;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    padding: 0 1rem;
+}
+
+.sub-topic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-left: 4rem;
+}
+
+.lesson-holder {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    border: 0.1rem solid #dddddd;
+    border-radius: 1rem;
+    box-shadow: 3px 3px 5px #0000001a;
+}
+
+.lesson-holder .lesson-name {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 1.2rem;
+    color: #333333;
+    font-weight: 400;
+}
+
+.lesson-holder .lesson-description {
+    font-size: 1rem;
+    color: #383838;
+    font-style: italic;
+}
+
+.add-lesson-button,
+.delete-lesson-button {
+    margin-left: auto;
+    padding: 0.5rem 1rem;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-lesson-button {
+    background-color: #0073e6;
+}
+
+.delete-lesson-button {
+    background-color: #ff0000;
+}
+
+.add-lesson-button:hover {
+    background-color: #005bb5;
+}
+
+.delete-lesson-button:hover {
+    background-color: #d82525;
+}
