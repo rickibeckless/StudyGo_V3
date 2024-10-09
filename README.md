@@ -1,4 +1,4 @@
-# WEB103 Project 3 - *StudyGo-v2.0*
+# WEB103 Project 3 - *StudyGo-v3.0*
 
 Submitted by: **Ricki Beckless**
 
