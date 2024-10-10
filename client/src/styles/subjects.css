@@ -5,6 +5,22 @@
 
 /* LEFT ASIDE STYLES */
 
+#subject-clear-btn {
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+    position: absolute;
+    top: 1vh;
+    right: 2vw;
+
+    color: #666666;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+#subject-clear-btn:hover {
+    color: #005bb5;
+}
+
 #subjects-filter-holder {
     width: 100%;
     background-color: #ffffff;

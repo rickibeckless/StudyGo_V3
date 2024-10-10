@@ -2,9 +2,9 @@
 
 Submitted by: **Ricki Beckless**
 
-About this web app: **App description here**
+About this web app: **StudyGo v3 is a web app designed to help users efficiently explore subjects, classes, and units within an educational framework. It utilizes a PostgreSQL database for structured data management, ensuring that all information is well-organized. Built with React, the app provides a straightforward interface that allows users to click on a subject to reveal related classes, and further expand to see associated units. Each detail page has its own unique URL for easy navigation.**
 
-Time spent: **12** hours
+Time spent: **14** hours
 
 ## Required Features
 
@@ -14,7 +14,7 @@ The following **required** functionality is completed:
 
 - [X] **The web app uses React to display data from the API**
 - [X] **The web app is connected to a PostgreSQL database, with an appropriately structured Events table**
-  - [ ] **NOTE: Your GIF or a screenshot added to this README must include a view of your Railway database that shows the contents of the table used by your app**
+  - [X] **NOTE: Your GIF or a screenshot added to this README must include a view of your Railway database that shows the contents of the table used by your app**
 - [X] **The web app displays the title of the app**
 - [X] **A visual interface allows the user to select a Location they would like to view**
 - [X] **Clicking on a Location shows a list of all items from the Events table that corresponds to that Location**
@@ -33,6 +33,9 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented required features:
 
+![StudyGov3](https://i.ibb.co/KywJX34/Code-Path-Study-Go-v2-p3-Walkthrough.gif)
+
+GIF also found at [StudyGo_v3](https://i.ibb.co/KywJX34/Code-Path-Study-Go-v2-p3-Walkthrough.gif) on ImgBB
 
 GIF created with [ScreenToGif](https://www.screentogif.com/) for Windows
 
