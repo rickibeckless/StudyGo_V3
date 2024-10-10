@@ -4,7 +4,7 @@ Submitted by: **Ricki Beckless**
 
 About this web app: **App description here**
 
-Time spent: **8** hours
+Time spent: **12** hours
 
 ## Required Features
 

@@ -69,23 +69,28 @@ function GeneralClassesPage() {
             <h2>General Classes</h2>
         </>
     );
-}
+};
 
 function SubjectPage({ subjectId }) {
     const [subject, setSubject] = useState(null);
     const [classes, setClasses] = useState(null);
     const [unitsByClass, setUnitsByClass] = useState({});
+    const [openUnitFormModal, setOpenUnitFormModal] = useState(false);
+    const [unitFormModalIds, setUnitFormModalIds] = useState({ subjectId: null, classId: null });
+
+    const toggleUnitFormModal = (subjectId, classId) => {
+        setOpenUnitFormModal(!openUnitFormModal);
+        setUnitFormModalIds({ subjectId, classId });
+    };
 
     useEffect(() => {
         const fetchSubject = async () => {
-            console.log(`Fetching subject data for subjectId: ${subjectId}`);
             const subjectRes = await fetch(`/api/subjects/${subjectId}`);
             const subjectData = await subjectRes.json();
             setSubject(subjectData[0]);
         };
 
         const fetchClasses = async () => {
-            console.log(`Fetching classes for subjectId: ${subjectId}`);
             const classesRes = await fetch(`/api/classes/${subjectId}`);
             const classesData = await classesRes.json();
             setClasses(classesData);
@@ -98,7 +103,6 @@ function SubjectPage({ subjectId }) {
     }, [subjectId]);
 
     const fetchUnits = async (classId) => {
-        console.log(`Fetching units for classId: ${classId}`);
         const unitsRes = await fetch(`/api/classes/${subjectId}/${classId}`);
         const unitsData = await unitsRes.json();
 
@@ -110,7 +114,7 @@ function SubjectPage({ subjectId }) {
 
     if (!subject) {
         return <LoadingScreen />;
-    }
+    };
 
     return (
         <>
@@ -124,7 +128,7 @@ function SubjectPage({ subjectId }) {
                         Nothing yet! <a href="#">Add some classes</a> to get started!
                     </li>
                 ) : (
-                    classes.map(cls => (
+                    classes?.map(cls => (
                         <div className="subject-holder" key={cls.unique_string_id}>
                             <li className="subject">
                                 {cls.name}
@@ -144,21 +148,75 @@ function SubjectPage({ subjectId }) {
                                                 <span className="subject-class-count-number">{unitsByClass[cls.unique_string_id].length}</span> units
                                             </p>
                                         )
-                                        
                                     ) : (
                                         <LoadingScreen />
                                     )}
-                                    <button className="add-class-button" title="Add a unit" onClick={openUnitFormModal}>+</button>
+                                    <button className="add-class-button" title="Add a unit" onClick={() => toggleUnitFormModal(subjectId, cls.unique_string_id)}>+</button>
                                 </div>
                             </div>
                         </div>
                     ))
                 )}
             </ul>
+            {openUnitFormModal && (
+                <UnitFormModal
+                    subjectId={unitFormModalIds.subjectId}
+                    classId={unitFormModalIds.classId}
+                    classes={classes}
+                    toggleUnitFormModal={toggleUnitFormModal}
+                />
+            )}
         </>
     );
 };
 
-function openUnitFormModal() {
-    console.log("Open unit form modal");
-}
+function UnitFormModal({ subjectId, classId, classes, toggleUnitFormModal }) {
+    const className = classes.find(cls => cls.unique_string_id === classId).name;
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const form = document.getElementById('classForm');
+        const formData = new FormData(form);
+        const formObj = Object.fromEntries(formData.entries());
+        formObj.classId = classId;
+
+        formObj.learningObjectives = formObj.learningObjectives
+            ? formObj.learningObjectives.split('\n').map(item => item.trim()).filter(Boolean)
+            : [];
+
+        const res = await fetch(`/api/units/${subjectId}/${classId}/new`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formObj)
+        });
+
+        const data = await res.json();
+
+        form.reset();
+        toggleUnitFormModal(subjectId, classId);
+    }
+
+    return (
+        <>
+            <div id="modalOverlay"></div>
+            <div id="classModal">
+                <h3 id="modal-title">Add Unit to {className}</h3>
+                <form id="classForm">
+                    <input className="modal-input" id="modalNameInput" type="text" name="name" placeholder="Unit Name" required />
+                    <textarea className="modal-input" id="modalDescriptionInput" name="description" placeholder="Unit Description" rows="4"></textarea>
+                    <textarea className="modal-input" id="modalLearningObjectivesInput" name="learningObjectives" placeholder="Learning Objectives (one per line)" rows="4"></textarea>
+                    <textarea className="modal-input" id="modalUnitOutcomesInput" name="unitOutcomes" placeholder="Unit Outcomes" rows="4"></textarea>
+                    <textarea className="modal-input" id="modalPrerequisitesInput" name="prerequisites" placeholder="Prerequisites" rows="4"></textarea>
+
+                    <div id="class-form-btn-holder">
+                        <button id="modalCloseButton" type="button" onClick={() => toggleUnitFormModal(subjectId, classId)}>Close</button>
+                        <button id="modalSubmitButton" type="submit" onClick={(e) => handleSubmit(e)}>Add Unit</button>
+                    </div>
+                </form>
+            </div>
+        </>
+    );
+};
