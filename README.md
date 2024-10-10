@@ -22,12 +22,12 @@ The following **required** functionality is completed:
 
 The following **optional** features are implemented:
 
-- [ ] An additional page shows all possible `Events` that the user can sort and filter by `Location`
+- [X] An additional page shows all possible `Events` that the user can sort and filter by `Location`
 - [ ] `Events` display a countdown showing the time remaining before that event and appears with different formatting when the event has passed
 
 The following **additional** features are implemented:
 
-- [ ] List anything else that you added to improve the site's functionality!
+- [X] Users can filter classes and search for class names on the class page.
 
 ## Video Walkthrough
 
@@ -41,7 +41,7 @@ GIF created with [ScreenToGif](https://www.screentogif.com/) for Windows
 
 ## Notes
 
-Describe any challenges encountered while building the app or any additional context you'd like to add.
+While the project requirements and steps utilized events and locations, I opted to build on the same project I've used in Units 1 and 2. The functionality has the same boilerplate of the requirements in that data can be viewed and selected to see further details.
 
 ## License
 
