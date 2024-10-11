@@ -32,6 +32,7 @@ header {
 #main-navbar ul {
     list-style: none;
     display: flex;
+    justify-content: flex-end;
     align-items: center;
 }
 
@@ -251,5 +252,67 @@ textarea.modal-input {
 
     50% {
         border-color: #ffffff;
+    }
+}
+
+/* Responsive Styles */
+
+/* Mobile */
+@media (max-width: 550px) {
+    #main-header {
+        grid-template-columns: 1fr;
+        justify-content: center;
+    }
+
+    #main-logo {
+        padding: 1rem 0;
+    }
+
+    #main-navbar {
+        display: none;
+    }
+
+    #main-navbar ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #main-navbar a {
+        margin: 0.5rem 0;
+    }
+
+    #main-navbar a:hover {
+        text-decoration: underline;
+    }
+
+    #main-navbar a {
+        font-size: 1.5rem;
+    }
+
+    #main-navbar ul {
+        display: none;
+    }
+
+    #main-navbar ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #main-navbar a {
+        margin: 0.5rem 0;
+    }
+
+    #main-navbar a:hover {
+        text-decoration: underline;
+    }
+
+    #main-navbar a {
+        font-size: 1.5rem;
+    }
+
+    #classModal {
+        width: 80vw;
     }
 }

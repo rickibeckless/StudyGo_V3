@@ -1,11 +1,7 @@
-import { query, json } from 'express';
 import { pool } from '../config/database.js';
 import { generateUniqueStringId, getAllUniqueIds } from '../data/allUniqueIds.js';
-// import topicsData from '../data/topics.js';
 
 export const getTopics = async (req, res) => {
-    // res.json(unitsData);
-
     try {
         const results = await pool.query('SELECT * FROM topics');
         res.status(200).json(results.rows);
@@ -103,10 +99,6 @@ export const deleteLessonFromTopic = async (req, res) => {
 };
 
 export const getTopicsById = async (req, res) => {
-    // const { subjectId, classId, unitId } = req.params;
-    // const topics = topicsData.filter(topic => topic.unitId === unitId);
-    // res.json(topics);
-
     try {
         const results = await pool.query('SELECT * FROM topics WHERE unitid = $1', [req.params.unitId]);
         res.status(200).json(results.rows);

@@ -1,12 +1,7 @@
-import { query, json } from 'express';
 import { pool } from '../config/database.js';
 import { generateUniqueStringId, getAllUniqueIds } from '../data/allUniqueIds.js';
-// import classesData from '../data/classes.js';
-// import unitsData from '../data/units.js';
 
 export const getClasses = async (req, res) => {
-    // res.json(classesData);
-
     try {
         const results = await pool.query('SELECT * FROM classes');
         res.status(200).json(results.rows);
@@ -17,10 +12,6 @@ export const getClasses = async (req, res) => {
 
 // Route to add a new class
 export const addClass = async (req, res) => {    
-    // const newClass = req.body;
-    // classesData.push(newClass);
-    // res.json(newClass);
-
     try {
         const subjectId = req.params.subjectId;
         const { name, description } = req.body;
@@ -72,10 +63,6 @@ export const updateClass = async (req, res) => {
 
 // Route to get classes by subject id
 export const getClassesBySubject = async (req, res) => {
-    // const subjectId = req.params.subjectId;
-    // const classes = classesData.filter((cls) => cls.subjectId === subjectId);
-    // res.json(classes);
-
     try {
         const results = await pool.query('SELECT * FROM classes WHERE subjectid = $1', [req.params.subjectId]);
         res.status(200).json(results.rows);
@@ -86,11 +73,6 @@ export const getClassesBySubject = async (req, res) => {
 
 // Route to get units by class id
 export const getUnitsByClass = async (req, res) => {
-    // const subjectId = req.params.subjectId;
-    // const classId = req.params.classId;
-    // const cls = classesData.find((cls) => cls.subjectId === subjectId && cls.id === classId);
-    // res.json(cls);
-
     try {
         const subjectId = req.params.subjectId;
         const classId = req.params.classId;
@@ -105,12 +87,6 @@ export const getUnitsByClass = async (req, res) => {
 
 // Route to get units by unit id
 export const getUnitsById = async (req, res) => {
-    // const subjectId = req.params.subjectId;
-    // const classId = req.params.classId;
-    // const unitId = req.params.unitId;
-    // const unit = unitsData.find((unit) => unit.subjectId === subjectId && unit.classId === classId && unit.id === unitId);
-    // res.json(unit);
-
     try {
         const { subjectId, classId, unitId } = req.params;
         const results = await pool.query('SELECT * FROM topics WHERE unitid = $1', [unitId]);

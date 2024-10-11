@@ -11,6 +11,8 @@ import Subjects from './pages/Subjects.jsx';
 import Classes from './pages/Classes.jsx';
 import ClassDetails from './pages/ClassDetails.jsx';
 import Units from './pages/Units.jsx';
+import Events from './pages/Events.jsx';
+import CurrentEvent from './pages/CurrentEvent.jsx';
 
 const router = createBrowserRouter([
     { // Main Pages
@@ -20,6 +22,8 @@ const router = createBrowserRouter([
             { path: '/', element: <Home /> },
             { path: '/subjects', element: <Subjects /> },
             { path: '/classes', element: <Classes /> },
+            { path: '/events', element: <Events /> },
+            { path: '/events/:eventId', element: <CurrentEvent /> },
             { path: '/:subjectId', element: <Classes /> },
             { path: '/:subjectId/:classId', element: <ClassDetails /> },
             { path: '/:subjectId/:classId/:unitId', element: <Units /> },

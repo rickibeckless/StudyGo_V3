@@ -1,0 +1,37 @@
+main#events-body {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0;
+    grid-auto-flow: row;
+    grid-template-areas: 
+        "filters events-sections"
+    ;
+
+    padding: 0 2rem;
+}
+
+main#events-body #events-section-holder {
+    grid-area: events-sections;
+    /* display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0;
+    grid-auto-flow: row;
+    grid-template-areas: 
+        "current-events"
+        "all-events"
+    ; */
+    padding: 2rem;
+}
+
+main#events-body #subjects-filter-holder {
+    grid-area: filters;
+}
+
+main#events-body #current-events-section {
+    grid-area: current-events;
+}
+
+main#events-body #all-events-section {
+    grid-area: all-events;
+}

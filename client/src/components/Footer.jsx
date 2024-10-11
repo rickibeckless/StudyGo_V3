@@ -1,7 +1,3 @@
-import React, { useEffect, useState, useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import PageTitle from "./PageTitle.jsx";
-
 export default function Footer() {
     return (
         <footer id="main-footer">
