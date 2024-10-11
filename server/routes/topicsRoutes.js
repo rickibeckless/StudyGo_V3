@@ -3,6 +3,8 @@ import { getTopics, addTopic, addLessonToTopic, deleteLessonFromTopic, getTopics
 
 const router = express.Router();
 
+// /api/topics
+
 router.get('/', getTopics);
 router.post('/:subjectId/:classId/:unitId/new', addTopic);
 
@@ -11,4 +13,4 @@ router.delete('/:subjectId/:classId/:unitId/:topicId/delete-sub-topic', deleteLe
 
 router.get('/:subjectId/:classId/:unitId', getTopicsById);
 
-export default router;import { Router } from 'express';
+export default router;

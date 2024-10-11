@@ -3,6 +3,8 @@ import { getUnits, addUnit, getUnitById, getTopicById } from '../controllers/uni
 
 const router = express.Router();
 
+// /api/units
+
 router.get('/', getUnits);
 router.post('/:subjectId/:classId/new', addUnit);
 router.get('/:subjectId/:classId/:unitId', getUnitById);

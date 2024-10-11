@@ -3,6 +3,8 @@ import { addClass, getClasses, getClassesBySubject, getUnitsByClass, getUnitsByI
 
 const router = express.Router();
 
+// /api/classes
+
 router.get('/', getClasses);
 router.get('/:subjectId', getClassesBySubject);
 router.post('/:subjectId/new', addClass);

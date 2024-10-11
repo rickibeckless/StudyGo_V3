@@ -2,31 +2,41 @@ import { useEffect, useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PageTitle from "../components/PageTitle.jsx";
 import "../styles/events.css";
+import EventCard from "../components/eventsComponents/EventCard.jsx";
+import NewEventModal from "../components/eventsComponents/NewEventModal.jsx";
 
 export default function Events() {
     const [events, setEvents] = useState([]);
     const [currentEvents, setCurrentEvents] = useState([]);
+    const [openNewEventModal, setOpenNewEventModal] = useState(false);
+
+    if (openNewEventModal) {
+        document.body.classList.add("modal-open");
+    } else {
+        document.body.classList.remove("modal-open");
+    };
+
+    const toggleNewEventModal = () => {
+        setOpenNewEventModal(!openNewEventModal);
+    };
 
     useEffect(() => {
         async function fetchEvents() {
             try {
                 const response = await fetch("/api/events");
                 const data = await response.json();
-                console.log(data);
-
-                // Filter out events that are in the past
-
-                // get events that are happening today
                 const currentDate = new Date();
-                const currentEvents = data.filter(event => new Date(event.event_date_time) === currentDate);
-                console.log(currentEvents);
+                const currentEvents = data.filter(event => {
+                    const eventDate = new Date(event.event_date_time);
+                    return eventDate.toDateString() === currentDate.toDateString();
+                });
 
                 setCurrentEvents(currentEvents);
                 setEvents(data);
             } catch (error) {
                 console.error(`Error fetching events: ${error.message}`);
-            }
-        }
+            };
+        };
 
         fetchEvents();
     }, []);
@@ -73,18 +83,7 @@ export default function Events() {
                         <h2>Current Events</h2>
                         <ul id="current-event-list">
                             {currentEvents.map(event => {
-                                return (
-                                    <li key={event.event_id} className="event-item">
-                                        <Link to={`/events/${event.event_id}`}>
-                                            <div id="event-info-holder">
-                                                <h3>{event.event_name}</h3>
-                                                <p>{event.event_description}</p>
-                                                <p>{event.event_date_time}</p>
-                                                {/* <p>{event.event_duration}</p> */}
-                                            </div>
-                                        </Link>
-                                    </li>
-                                );
+                                return <EventCard event={event} cardKey={event.event_id} currentEvent={true} />;
                             })}
                         </ul>
                     </section>
@@ -94,22 +93,19 @@ export default function Events() {
                     <h2>All Events</h2>
                     <ul id="event-list">
                         {events.length > 0 ? events.map(event => {
-                            return (
-                                <li key={event.event_id} className="event-item">
-                                    <Link to={`/events/${event.event_id}`}>
-                                        <div id="event-info-holder">
-                                            <h3>{event.event_name}</h3>
-                                            <p>{event.event_description}</p>
-                                            <p>{event.event_date_time}</p>
-                                            {/* <p>{event.event_duration}</p> */}
-                                        </div>
-                                    </Link>
-                                </li>
-                            );
+                            return <EventCard event={event} cardKey={event.event_id} currentEvent={false} />;
                         }) : <li id="default-li">Nothing yet! <a href="#">Add some events</a> to get started!</li>}
                     </ul>
                 </section>
             </div>
+
+            <aside id="new-event-button-holder">
+                <button type="button" id="new-event-button" onClick={() => toggleNewEventModal()}>New Event</button>
+            </aside>
+
+            {openNewEventModal && (
+                <NewEventModal toggleNewEventModal={toggleNewEventModal} />
+            )}
         </main>
     );
 };
