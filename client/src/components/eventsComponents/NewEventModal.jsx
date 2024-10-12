@@ -28,6 +28,11 @@ export default function NewEventModal({ toggleNewEventModal }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const originalDateTime = formData.event_date_time;
+        const updatedDateTime = new Date(originalDateTime).toISOString();
+
+        formData.event_date_time = updatedDateTime;
+
         const res = await fetch('/api/events/new', {
             method: 'POST',
             headers: {

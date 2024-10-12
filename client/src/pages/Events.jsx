@@ -80,7 +80,7 @@ export default function Events() {
             <div id="events-section-holder">
                 {currentEvents.length > 0 ?
                     <section id="current-events-section">
-                        <h2>Current Events</h2>
+                        <h2 className="events-section-header">Current Events</h2>
                         <ul id="current-event-list">
                             {currentEvents.map(event => {
                                 return <EventCard event={event} cardKey={event.event_id} currentEvent={true} />;
@@ -90,7 +90,7 @@ export default function Events() {
                 : null}
 
                 <section id="all-events-section">
-                    <h2>All Events</h2>
+                    <h2 className="events-section-header">All Events</h2>
                     <ul id="event-list">
                         {events.length > 0 ? events.map(event => {
                             return <EventCard event={event} cardKey={event.event_id} currentEvent={false} />;

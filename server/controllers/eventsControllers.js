@@ -6,7 +6,7 @@ export const getEvents = async (req, res) => {
         res.status(200).json(results.rows);
     } catch (error) {
         throw error;
-    }
+    };
 };
 
 export const createEvent = async (req, res) => {
@@ -52,5 +52,5 @@ export const createEvent = async (req, res) => {
         res.status(500).json({ message: 'Error creating event', error });
     } finally {
         client.release();
-    }
+    };
 };

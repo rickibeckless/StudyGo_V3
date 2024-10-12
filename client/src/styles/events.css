@@ -26,16 +26,144 @@ main#events-body #events-section-holder {
     padding: 2rem;
 }
 
+main#events-body #events-section-holder h2 {
+    font-size: 1.6rem;
+    margin-bottom: 2rem;
+    color: #333333;
+    text-align: center;
+}
+
+main#events-body #events-section-holder h2:hover {
+    color: #0073e6;
+}
+
 main#events-body #subjects-filter-holder {
     grid-area: filters;
 }
 
-main#events-body #current-events-section {
-    grid-area: current-events;
+.events-section-header {
+    text-align: center;
 }
 
-main#events-body #all-events-section {
-    grid-area: all-events;
+.event-container:hover {
+    cursor: pointer;
+}
+
+/* current events styles */
+#current-events-section {
+    padding: 5vh;
+    margin-bottom: 5vh;
+    border-bottom: 5px solid #333333;
+}
+
+#current-event-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30vh, 1fr));
+    gap: 2rem;
+    justify-items: center;
+}
+
+.current-event-item {
+    list-style: none;
+    width: 30vh;
+    height: 30vh;
+
+    background-image: url('../assets/megaphone_icon1.jpg');
+    background-size: auto;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border-radius: 50%;
+
+    animation: bounce 2s infinite;
+    transition: transform 0.4s ease-in-out;
+}
+
+.current-event-item:hover {
+    transform: scale(1.05);
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-30px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+.current-event-item .event-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.current-event-item:hover .event-info-holder {
+    background-color: #010407c4;
+    width: 90%;
+    height: 90%;
+    font-size: 1.1rem;
+}
+
+.current-event-item .event-info-holder {
+    background-color: #041424c4;
+    border-radius: 50%;
+    color: #ffffff;
+    padding: 1rem;
+    width: 80%;
+    height: 80%;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all .6s ease-in-out;
+}
+
+/* event styles */
+#event-list {
+    padding: 1rem 2rem;
+    display: grid;
+    justify-items: center;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: 2rem;
+}
+
+.event-item {
+    list-style: none;
+    width: 80%;
+    height: 30vh;
+
+    transition: transform 0.4s ease-in-out;
+}
+
+.event-item:hover {
+    transform: scale(1.05);
+}
+
+.event-item .event-container {
+    width: 100%;
+    height: 100%;
+
+    text-decoration: none;
+    color: #333333;
+}
+
+.event-item .event-container:hover {
+    background-color: #f0f0f0;
+}
+
+.event-info-holder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+
+    height: 100%;
+    text-align: center;
 }
 
 /* new event button styles */
@@ -48,7 +176,7 @@ main#events-body #new-event-button-holder {
     width: 4rem;
     height: 4rem;
     border-radius: 50%;
-    animation: pulse 2s infinite;
+    animation: shake 3s infinite;
 }
 
 main#events-body #new-event-button {
@@ -59,12 +187,15 @@ main#events-body #new-event-button {
     padding: .5rem;
 }
 
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
+@keyframes shake {
+    0%, 10%, 20%, 90%, 80%, 100% {
+        transform: rotate(0deg);
     }
-    50% {
-        transform: scale(1.1);
+    30%, 50%, 70% {
+        transform: rotate(-5deg);
+    }
+    40%, 60% {
+        transform: rotate(5deg);
     }
 }
 

@@ -34,22 +34,22 @@ export default function EventCard({ event, cardKey, currentEvent }) {
     const formattedHours = String(leftoverHours).padStart(2, '0');
 
     return (
-        <li key={cardKey} className="event-item">
-            <Link to={`/events/${event.event_id}`}>
-                <div id="event-info-holder">
-                    <h3>{event.event_name}</h3>
-                    <p>{event.event_description}</p>
-                    <div className="event-info-date-time-holder">
-                        <p>{eventTime} — {eventEndTime}</p>
-                        <p title={eventDateFull}>{eventDate}</p>
-                        <h4>Time Until Event:</h4>
-                        {!currentEvent ?
-                            <p>{formattedDays} days, {formattedHours} hours, {leftoverMinutes} minutes</p>
-                        : <p>Happening Now!</p>
-                        }
-                    </div>
+        <li key={cardKey} className={`${currentEvent ? `current-event-item` : `event-item`}`}>
+            <div className="event-container">
+                <div className="event-info-holder">
+                    <h3 className="event-info-title">{event.event_name}</h3>
+                    <p className="event-info-description">{event.event_description}</p>
+                    {!currentEvent ?
+                        <div className="event-info-date-time-holder">
+                            <p className="event-info-time">{eventTime} — {eventEndTime}</p>
+                            <p className="event-info-date" title={eventDateFull}>{eventDate}</p>
+                            <h4 className="event-info-time-title">Time Until Event:</h4>
+                            <p className="event-info-remaining">{formattedDays} days, {formattedHours} hours, {leftoverMinutes} minutes</p>
+                        </div>
+                    : null
+                    }
                 </div>
-            </Link>
+            </div>
         </li>
     );
-}
+};
