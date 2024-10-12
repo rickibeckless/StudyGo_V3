@@ -9,6 +9,16 @@ export const getEvents = async (req, res) => {
     };
 };
 
+export const getEventHost = async (req, res) => {
+    try {
+        const { hostId } = req.params;
+        const results = await pool.query('SELECT * FROM hosts WHERE host_id = $1', [hostId]);
+        res.status(200).json(results.rows);
+    } catch (error) {
+        throw error;
+    };
+};
+
 export const createEvent = async (req, res) => {
     const client = await pool.connect();
     try {

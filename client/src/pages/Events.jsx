@@ -4,6 +4,7 @@ import PageTitle from "../components/PageTitle.jsx";
 import "../styles/events.css";
 import EventCard from "../components/eventsComponents/EventCard.jsx";
 import NewEventModal from "../components/eventsComponents/NewEventModal.jsx";
+import "../styles/eventModals.css";
 
 export default function Events() {
     const [events, setEvents] = useState([]);
@@ -82,8 +83,16 @@ export default function Events() {
                     <section id="current-events-section">
                         <h2 className="events-section-header">Current Events</h2>
                         <ul id="current-event-list">
-                            {currentEvents.map(event => {
-                                return <EventCard event={event} cardKey={event.event_id} currentEvent={true} />;
+                            {currentEvents.map((event, index) => {
+                                const evenOrOdd = index % 2 === 0 ? 'even' : 'odd';
+                                return (
+                                    <EventCard 
+                                        event={event} 
+                                        cardKey={event.event_id} 
+                                        currentEvent={true} 
+                                        evenOrOdd={evenOrOdd}
+                                    />
+                                );
                             })}
                         </ul>
                     </section>

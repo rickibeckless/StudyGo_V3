@@ -57,10 +57,17 @@ main#events-body #subjects-filter-holder {
 }
 
 #current-event-list {
-    display: grid;
+    /* display: grid;
     grid-template-columns: repeat(auto-fit, minmax(30vh, 1fr));
     gap: 2rem;
-    justify-items: center;
+    justify-items: center; */
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
 }
 
 .current-event-item {
@@ -75,8 +82,16 @@ main#events-body #subjects-filter-holder {
 
     border-radius: 50%;
 
-    animation: bounce 2s infinite;
     transition: transform 0.4s ease-in-out;
+}
+
+.current-event-item.even {
+    animation: bounce 2s infinite;
+}
+
+.current-event-item.odd {
+    animation: bounce 2s infinite;
+    animation-delay: 1s;
 }
 
 .current-event-item:hover {
@@ -135,9 +150,18 @@ main#events-body #subjects-filter-holder {
 .event-item {
     list-style: none;
     width: 80%;
-    height: 30vh;
+    height: 50vh;
+    padding: 1.5rem;
 
     transition: transform 0.4s ease-in-out;
+
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.2rem 0.5rem #0000001a;
+    overflow: scroll;
+    cursor: pointer;
 }
 
 .event-item:hover {
@@ -164,6 +188,18 @@ main#events-body #subjects-filter-holder {
 
     height: 100%;
     text-align: center;
+}
+
+.event-info-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #007BFF;
+}
+
+.event-info-date-time-holder {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
 }
 
 /* new event button styles */
@@ -199,42 +235,3 @@ main#events-body #new-event-button {
     }
 }
 
-/* new event modal styles */
-#new-event-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40vw;
-    padding: 2rem;
-    background-color: #ffffff;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 12px #00000026;
-    z-index: 2001;
-
-    height: 85dvh;
-    overflow: scroll;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-#new-event-form {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
-    max-height: 100%;
-    overflow: scroll;
-    margin: 1rem 0;
-}
-
-.new-event-form-page {
-    max-height: 100%;
-    
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    row-gap: 1rem;
-}

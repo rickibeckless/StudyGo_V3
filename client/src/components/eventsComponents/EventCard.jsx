@@ -2,8 +2,21 @@ import { useEffect, useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PageTitle from "../PageTitle.jsx";
 import LoadingScreen from "../LoadingScreen.jsx";
+import EventModal from "./EventModal.jsx";
 
-export default function EventCard({ event, cardKey, currentEvent }) {
+export default function EventCard({ event, cardKey, currentEvent, evenOrOdd }) {
+    const [openEventModal, setOpenEventModal] = useState(false);
+
+    if (openEventModal) {
+        document.body.classList.add("modal-open");
+    } else {
+        document.body.classList.remove("modal-open");
+    };
+
+    const toggleEventModal = () => {
+        setOpenEventModal(!openEventModal);
+    };
+
     const eventDateTime = new Date(event.event_date_time);
 
     const eventDateFull = eventDateTime.toDateString()
@@ -33,23 +46,34 @@ export default function EventCard({ event, cardKey, currentEvent }) {
     const formattedDays = String(timeUntilEventDays).padStart(2, '0');
     const formattedHours = String(leftoverHours).padStart(2, '0');
 
+    const handleEventClick = () => {
+        toggleEventModal();
+    };
+
     return (
-        <li key={cardKey} className={`${currentEvent ? `current-event-item` : `event-item`}`}>
-            <div className="event-container">
-                <div className="event-info-holder">
-                    <h3 className="event-info-title">{event.event_name}</h3>
-                    <p className="event-info-description">{event.event_description}</p>
-                    {!currentEvent ?
-                        <div className="event-info-date-time-holder">
-                            <p className="event-info-time">{eventTime} — {eventEndTime}</p>
-                            <p className="event-info-date" title={eventDateFull}>{eventDate}</p>
-                            <h4 className="event-info-time-title">Time Until Event:</h4>
-                            <p className="event-info-remaining">{formattedDays} days, {formattedHours} hours, {leftoverMinutes} minutes</p>
-                        </div>
-                    : null
-                    }
+        <>
+            <li key={cardKey} className={`${currentEvent ? `current-event-item` : `event-item`} ${evenOrOdd ? `${evenOrOdd}` : ``}`} onClick={() => handleEventClick()}>
+                <div className="event-container">
+                    <div className="event-info-holder">
+                        <h3 className="event-info-title">{event.event_name}</h3>
+                        <p className="event-info-description">{event.event_description}</p>
+                        {!currentEvent ?
+                            <div className="event-info-date-time-holder">
+                                <p className="event-info-date" title={eventDateFull}>{eventDate}</p>
+                                <p className="event-info-time">{eventTime} — {eventEndTime}</p>
+                                
+                                <h4 className="event-info-time-title">Time Until Event:</h4>
+                                <p className="event-info-remaining">{formattedDays} days, {formattedHours} hours, {leftoverMinutes} minutes</p>
+                            </div>
+                        : null
+                        }
+                    </div>
                 </div>
-            </div>
-        </li>
+            </li>
+
+            {openEventModal && (
+                <EventModal event={event} currentEvent={currentEvent} toggleEventModal={toggleEventModal} />
+            )}
+        </>
     );
 };
