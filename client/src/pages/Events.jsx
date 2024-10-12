@@ -11,14 +11,9 @@ export default function Events() {
     const [currentEvents, setCurrentEvents] = useState([]);
     const [openNewEventModal, setOpenNewEventModal] = useState(false);
 
-    if (openNewEventModal) {
-        document.body.classList.add("modal-open");
-    } else {
-        document.body.classList.remove("modal-open");
-    };
-
     const toggleNewEventModal = () => {
         setOpenNewEventModal(!openNewEventModal);
+        document.body.classList.toggle("modal-open");
     };
 
     useEffect(() => {

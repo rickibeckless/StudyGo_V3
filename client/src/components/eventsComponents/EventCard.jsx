@@ -6,15 +6,10 @@ import EventModal from "./EventModal.jsx";
 
 export default function EventCard({ event, cardKey, currentEvent, evenOrOdd }) {
     const [openEventModal, setOpenEventModal] = useState(false);
-
-    if (openEventModal) {
-        document.body.classList.add("modal-open");
-    } else {
-        document.body.classList.remove("modal-open");
-    };
-
+    
     const toggleEventModal = () => {
         setOpenEventModal(!openEventModal);
+        document.body.classList.toggle("modal-open");
     };
 
     const eventDateTime = new Date(event.event_date_time);

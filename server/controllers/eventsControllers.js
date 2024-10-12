@@ -2,10 +2,23 @@ import { pool } from '../config/database.js';
 
 // export const getEvents = async (req, res) => {
 //     try {
-//         const results = await pool.query('SELECT * FROM events');
+//         const now = new Date().toISOString();
+
+//         await pool.query(`
+//             DELETE FROM events 
+//             WHERE event_date_time + (event_duration::INTERVAL) < $1
+//         `, [now]);
+
+//         const results = await pool.query(`
+//             SELECT * FROM events 
+//             WHERE event_date_time + (event_duration::INTERVAL) >= $1
+//             ORDER BY event_date_time ASC
+//         `, [now]);
+
 //         res.status(200).json(results.rows);
 //     } catch (error) {
-//         throw error;
+//         console.error('Error fetching events:', error);
+//         res.status(500).json({ message: 'Error fetching events', error });
 //     };
 // };
 
@@ -13,14 +26,49 @@ export const getEvents = async (req, res) => {
     try {
         const now = new Date().toISOString();
 
-        await pool.query(`
-            DELETE FROM events 
-            WHERE event_date_time + (event_duration::INTERVAL) < $1
+        const pastEvents = await pool.query(`
+            SELECT event_id, event_host_id
+            FROM events 
+            WHERE event_date_time + (event_duration || ' minutes')::INTERVAL < $1
         `, [now]);
+
+        const eventIds = pastEvents.rows.map(event => event.event_id);
+        const hostIds = pastEvents.rows.map(event => event.event_host_id);
+
+        if (eventIds.length > 0) {
+            await pool.query(`
+                DELETE FROM attendees
+                WHERE event_id = ANY($1)
+            `, [eventIds]);
+
+            await pool.query(`
+                DELETE FROM hosts
+                WHERE host_id = ANY($1)
+            `, [hostIds]);
+
+            await pool.query(`
+                DELETE FROM events
+                WHERE event_id = ANY($1)
+            `, [eventIds]);
+        }
+
+        await pool.query(`
+            DELETE FROM hosts 
+            WHERE host_id NOT IN (
+                SELECT DISTINCT event_host_id FROM events
+            )
+        `);
+
+        await pool.query(`
+            DELETE FROM attendees 
+            WHERE event_id NOT IN (
+                SELECT event_id FROM events
+            )
+        `);
 
         const results = await pool.query(`
             SELECT * FROM events 
-            WHERE event_date_time + (event_duration::INTERVAL) >= $1
+            WHERE event_date_time + (event_duration || ' minutes')::INTERVAL >= $1
             ORDER BY event_date_time ASC
         `, [now]);
 
@@ -82,6 +130,51 @@ export const createEvent = async (req, res) => {
         await client.query('ROLLBACK');
         console.error('Error creating event:', error);
         res.status(500).json({ message: 'Error creating event', error });
+    } finally {
+        client.release();
+    };
+};
+
+export const updateEvent = async (req, res) => {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        const { hostId, eventId } = req.params;
+        const {
+            host_name,
+            host_email,
+            host_phone,
+            host_password,
+            host_title,
+            event_name,
+            event_organization,
+            event_subject,
+            event_description,
+            event_date_time,
+            event_duration
+        } = req.body;
+
+        const hostResults = await client.query(
+            'UPDATE hosts SET host_name = $1, host_email = $2, host_phone = $3, host_password = $4, host_title = $5 WHERE host_id = $6 RETURNING *',
+            [host_name, host_email, host_phone, host_password, host_title, hostId]
+        );
+
+        const eventResults = await client.query(
+            'UPDATE events SET event_name = $1, event_organization = $2, event_subject = $3, event_description = $4, event_date_time = $5, event_duration = $6::INTERVAL WHERE event_id = $7 RETURNING *',
+            [event_name, event_organization, event_subject, event_description, event_date_time, event_duration, eventId]
+        );
+
+        await client.query('COMMIT');
+
+        res.status(200).json({
+            host: hostResults.rows[0],
+            event: eventResults.rows[0]
+        });
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error updating event:', error);
+        res.status(500).json({ message: 'Error updating event', error });
     } finally {
         client.release();
     };

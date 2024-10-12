@@ -66,6 +66,23 @@
     overflow: scroll;
 }
 
+#event-modal-edit-icon {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #0073e6;
+
+    animation: shake 3s infinite;
+    transition: all .5s ease-in-out;
+}
+
+#event-modal-edit-icon:hover {
+    color: #005bb5;
+    font-size: 1.3rem;
+}
+
 #event-modal-content {
     display: flex;
     flex-direction: column;
@@ -136,24 +153,12 @@
     color: #333333;
 }
 
-.event-host-arrow.right {
-    /* border-top: .6rem solid transparent;
-    border-bottom: .6rem solid transparent;
-
-    border-left: .6rem solid #333333; */
-}
-
 .event-host-arrow.down {
-    /* border-left: .6rem solid transparent;
-    border-right: .6rem solid transparent;
-
-    border-top: .6rem solid #333333; */
-
     transform: rotate(90deg);
 }
 
 .event-host-expanded-info {
-    
+    padding: 1rem;
 }
 
 .event-host-expanded-info.hidden {
