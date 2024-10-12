@@ -33,9 +33,9 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented required features:
 
-![StudyGov3](https://i.ibb.co/KywJX34/Code-Path-Study-Go-v2-p3-Walkthrough.gif)
+![StudyGov3](https://i.ibb.co/cTZkxJR/Code-Path-Study-Go-v3-Walkthrough.gif)
 
-GIF also found at [StudyGo_v3](https://i.ibb.co/KywJX34/Code-Path-Study-Go-v2-p3-Walkthrough.gif) on ImgBB
+GIF also found at [StudyGo_v3](https://i.ibb.co/cTZkxJR/Code-Path-Study-Go-v3-Walkthrough.gif) on ImgBB
 
 GIF created with [ScreenToGif](https://www.screentogif.com/) for Windows
 
