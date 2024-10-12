@@ -1,11 +1,33 @@
 import { pool } from '../config/database.js';
 
+// export const getEvents = async (req, res) => {
+//     try {
+//         const results = await pool.query('SELECT * FROM events');
+//         res.status(200).json(results.rows);
+//     } catch (error) {
+//         throw error;
+//     };
+// };
+
 export const getEvents = async (req, res) => {
     try {
-        const results = await pool.query('SELECT * FROM events');
+        const now = new Date().toISOString();
+
+        await pool.query(`
+            DELETE FROM events 
+            WHERE event_date_time + (event_duration::INTERVAL) < $1
+        `, [now]);
+
+        const results = await pool.query(`
+            SELECT * FROM events 
+            WHERE event_date_time + (event_duration::INTERVAL) >= $1
+            ORDER BY event_date_time ASC
+        `, [now]);
+
         res.status(200).json(results.rows);
     } catch (error) {
-        throw error;
+        console.error('Error fetching events:', error);
+        res.status(500).json({ message: 'Error fetching events', error });
     };
 };
 

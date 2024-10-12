@@ -89,6 +89,8 @@ export default function EventModal({ event, toggleEventModal, currentEvent }) {
                     : null
                     }
                 </div>
+                {currentEvent ? <button type="button">Join Event!</button> : null}
+                <button type="button">Register For Event!</button>
                 <button id="modalCloseButton" type="button" onClick={() => toggleEventModal()}>Close</button>
             </div>
         </>
