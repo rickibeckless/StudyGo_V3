@@ -96,9 +96,9 @@ export default function Events() {
                 <section id="all-events-section">
                     <h2 className="events-section-header">All Events</h2>
                     <ul id="event-list">
-                        {events.length > 0 ? events.map(event => {
-                            return <EventCard event={event} cardKey={event.event_id} currentEvent={false} />;
-                        }) : <li id="default-li">Nothing yet! <a href="#">Add some events</a> to get started!</li>}
+                        {events.length > 0 ? events.map((event, index) => {
+                            return <EventCard key={`event-card-${index}`} event={event} cardKey={event.event_id} currentEvent={false} />;
+                        }) : <li id="default-li" key="event-default">Nothing yet! <a href="#">Add some events</a> to get started!</li>}
                     </ul>
                 </section>
             </div>
