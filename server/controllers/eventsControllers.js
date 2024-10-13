@@ -89,6 +89,41 @@ export const getEventHost = async (req, res) => {
     };
 };
 
+export const getEventAttendees = async (req, res) => {
+    try {
+        const { eventId } = req.params;
+        const results = await pool.query('SELECT * FROM attendees WHERE event_id = $1', [eventId]);
+        res.status(200).json(results.rows);
+    } catch (error) {
+        throw error;
+    };
+};
+
+export const registerAttendee = async (req, res) => {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        const { eventId } = req.params;
+        const { attendee_name, attendee_email, attendee_phone, attendee_password } = req.body;
+
+        const results = await client.query(
+            'INSERT INTO attendees (event_id, attendee_name, attendee_email, attendee_phone, attendee_password) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [eventId, attendee_name, attendee_email, attendee_phone, attendee_password]
+        );
+
+        await client.query('COMMIT');
+
+        res.status(201).json(results.rows[0]);
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error registering attendee:', error);
+        res.status(500).json({ message: 'Error registering attendee', error });
+    } finally {
+        client.release();
+    };
+};
+
 export const createEvent = async (req, res) => {
     const client = await pool.connect();
     try {

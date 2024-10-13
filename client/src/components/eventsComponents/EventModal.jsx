@@ -3,6 +3,8 @@ import LoadingScreen from "../LoadingScreen.jsx";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons'
 import HostEditEventModal from "./HostEditEventModal.jsx";
+import AttendeeRegisterEventModal from "./AttendeeRegisterModal.jsx";
+import EventSignInModal from "./EventSignInModal.jsx";
 
 export default function EventModal({ event, toggleEventModal, currentEvent }) {
     const [host, setHost] = useState(null);
@@ -77,9 +79,9 @@ export default function EventModal({ event, toggleEventModal, currentEvent }) {
                 {editEventModalVisible ? (
                     <HostEditEventModal event={event} host={host} toggleEditEventModal={toggleEditEventModal} />
                 ) : signinEventModalVisible ? (
-                    <LoadingScreen />
+                    <EventSignInModal event={event} host={host} toggleEventModal={toggleEventModal} toggleSigninEventModal={toggleSigninEventModal} />
                 ) : attendeeRegisterEventModalVisible ? (
-                    <LoadingScreen />
+                    <AttendeeRegisterEventModal event={event} toggleEventModal={toggleEventModal} currentEvent={currentEvent} toggleAttendeeRegisterEventModal={toggleAttendeeRegisterEventModal} />
                 ) :
                     <div id="event-modal-content">
                         <p id="event-modal-edit-icon" title="Hosts can edit events!" onClick={() => toggleEditEventModal()}><FontAwesomeIcon icon={faPenToSquare} /></p>

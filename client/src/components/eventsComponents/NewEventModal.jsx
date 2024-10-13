@@ -1,5 +1,6 @@
 import { useState } from "react";
 import LoadingScreen from "../LoadingScreen.jsx";
+import MessagePopup from "../MessagePopup.jsx";
 
 export default function NewEventModal({ toggleNewEventModal }) {
     const [currentPage, setCurrentPage] = useState(1);

@@ -2,8 +2,13 @@ import { useState, useEffect } from "react";
 import LoadingScreen from "../LoadingScreen.jsx";
 import MessagePopup from "../MessagePopup.jsx";
 
-export default function VerifyHostModal({ host, setVerifiedHost, toggleVerifyHostModal }) {
+export default function VerifyHostModal({ host, setVerifiedHost, toggleVerifyHostModal, toggleEditEventModal }) {
     const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setLoading(false);
+    }, []);
 
     const verifyHost = async (e) => {
         e.preventDefault();
@@ -21,6 +26,7 @@ export default function VerifyHostModal({ host, setVerifiedHost, toggleVerifyHos
 
     return (
         <>
+            {loading ? <LoadingScreen /> : null}
             <form id="event-modal-content" onSubmit={verifyHost}>
                 <h3>Host Sign In:</h3>
 
@@ -30,7 +36,7 @@ export default function VerifyHostModal({ host, setVerifiedHost, toggleVerifyHos
                 <label htmlFor="host_password">Host Password:</label>
                 <input className="modal-input" type="password" id="host_password" name="host_password" required />
 
-                <button type="button" onClick={() => toggleVerifyHostModal()}>Cancel</button>
+                <button type="button" onClick={() => toggleEditEventModal()}>Cancel</button>
                 <button type="submit">Sign In</button>
             </form>
             {message && <MessagePopup message={message} setMessage={setMessage} />}

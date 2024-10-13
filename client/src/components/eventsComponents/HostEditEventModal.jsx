@@ -4,6 +4,7 @@ import VerifyHostModal from "./VerifyHostModal.jsx";
 import MessagePopup from "../MessagePopup.jsx";
 
 export default function HostEditEventModal({ event, host, toggleEditEventModal }) {
+    const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
     const [verifiedHost, setVerifiedHost] = useState(false);
     const [verifyHostModalVisible, setVerifyHostModalVisible] = useState(false);
@@ -25,6 +26,10 @@ export default function HostEditEventModal({ event, host, toggleEditEventModal }
     const toggleVerifyHostModal = () => {
         setVerifyHostModalVisible(!verifyHostModalVisible);
     };
+
+    useEffect(() => {
+        setLoading(false);
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -65,8 +70,14 @@ export default function HostEditEventModal({ event, host, toggleEditEventModal }
 
     return (
         <>
+            {loading ? <LoadingScreen /> : null}
             {!verifiedHost ? (
-                <VerifyHostModal host={host} setVerifiedHost={setVerifiedHost} toggleVerifyHostModal={toggleVerifyHostModal} />
+                <VerifyHostModal 
+                    host={host} 
+                    setVerifiedHost={setVerifiedHost} 
+                    toggleVerifyHostModal={toggleVerifyHostModal} 
+                    toggleEditEventModal={toggleEditEventModal}
+                />
             ) : 
                 <form id="event-modal-content" onSubmit={handleSubmit}>
                     {currentPage === 1 && (

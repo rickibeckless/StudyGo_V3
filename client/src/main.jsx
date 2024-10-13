@@ -23,7 +23,7 @@ const router = createBrowserRouter([
             { path: '/subjects', element: <Subjects /> },
             { path: '/classes', element: <Classes /> },
             { path: '/events', element: <Events /> },
-            { path: '/events/:eventId', element: <CurrentEvent /> },
+            { path: '/events/:eventId?=:userType?=:userId', element: <CurrentEvent /> },
             { path: '/:subjectId', element: <Classes /> },
             { path: '/:subjectId/:classId', element: <ClassDetails /> },
             { path: '/:subjectId/:classId/:unitId', element: <Units /> },

@@ -41,6 +41,8 @@ export default function EventCard({ event, cardKey, currentEvent, evenOrOdd }) {
     const formattedDays = String(timeUntilEventDays).padStart(2, '0');
     const formattedHours = String(leftoverHours).padStart(2, '0');
 
+    const splicedDescription = event.event_description.length > 40 ? `${event.event_description.slice(0, 40)}...` : event.event_description;
+
     const handleEventClick = () => {
         toggleEventModal();
     };
@@ -51,7 +53,8 @@ export default function EventCard({ event, cardKey, currentEvent, evenOrOdd }) {
                 <div className="event-container">
                     <div className="event-info-holder">
                         <h3 className="event-info-title">{event.event_name}</h3>
-                        <p className="event-info-description">{event.event_description}</p>
+                        {!currentEvent ? <p className="event-info-description">{event.event_description}</p> : <p className="event-info-description">{splicedDescription}</p>}
+                        {/* <p className="event-info-description">{event.event_description}</p> */}
                         {!currentEvent ?
                             <div className="event-info-date-time-holder">
                                 <p className="event-info-date" title={eventDateFull}>{eventDate}</p>

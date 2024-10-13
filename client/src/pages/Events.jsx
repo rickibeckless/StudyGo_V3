@@ -1,12 +1,14 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PageTitle from "../components/PageTitle.jsx";
+import LoadingScreen from "../components/LoadingScreen.jsx";
 import "../styles/events.css";
 import EventCard from "../components/eventsComponents/EventCard.jsx";
 import NewEventModal from "../components/eventsComponents/NewEventModal.jsx";
 import "../styles/eventModals.css";
 
 export default function Events() {
+    const [loading, setLoading] = useState(true);
     const [events, setEvents] = useState([]);
     const [currentEvents, setCurrentEvents] = useState([]);
     const [openNewEventModal, setOpenNewEventModal] = useState(false);
@@ -29,6 +31,7 @@ export default function Events() {
 
                 setCurrentEvents(currentEvents);
                 setEvents(data);
+                setLoading(false);
             } catch (error) {
                 console.error(`Error fetching events: ${error.message}`);
             };
@@ -39,6 +42,7 @@ export default function Events() {
 
     return (
         <main id="events-body" className="container">
+            {loading ? <LoadingScreen /> : null}
             <PageTitle title="All Events | StudyGo" />
             {/* <aside id="subjects-filter-holder">
                 <p id="subject-clear-btn" onClick={() => { clearSearchAndFilters() }}>clear filters</p>
@@ -82,6 +86,7 @@ export default function Events() {
                                 const evenOrOdd = index % 2 === 0 ? 'even' : 'odd';
                                 return (
                                     <EventCard 
+                                        key="current-event-card-${index}"
                                         event={event} 
                                         cardKey={event.event_id} 
                                         currentEvent={true} 

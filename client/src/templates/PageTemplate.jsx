@@ -32,6 +32,10 @@ export default function PageTemplate() {
 
     const navigate = useNavigate(); // used to navigate to a different page
 
+    useEffect(() => { // runs once when the page loads
+        setLoading(false); // set to false when done loading
+    }, []); // the empty array means this effect will only run once
+
     return (
         <> {/* React fragment (shorthand), used to return multiple elements. Pages usually start with fragment */}
             <PageTitle title="Page Title | StudyGo" />

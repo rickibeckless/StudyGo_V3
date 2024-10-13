@@ -221,6 +221,12 @@ main#events-body #new-event-button {
     border-radius: 50%;
     font-size: 1rem;
     padding: .5rem;
+
+    transition: transform 0.3s ease-in-out;
+}
+
+main#events-body #new-event-button:hover {
+    transform: scale(1.1);
 }
 
 @keyframes shake {
