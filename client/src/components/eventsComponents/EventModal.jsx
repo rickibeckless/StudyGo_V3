@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import LoadingScreen from "../LoadingScreen.jsx";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons'
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import HostEditEventModal from "./HostEditEventModal.jsx";
 import AttendeeRegisterEventModal from "./AttendeeRegisterModal.jsx";
 import EventSignInModal from "./EventSignInModal.jsx";

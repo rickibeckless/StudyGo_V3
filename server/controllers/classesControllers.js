@@ -10,6 +10,15 @@ export const getClasses = async (req, res) => {
     }
 };
 
+export const getClassById = async (req, res) => {
+    try {
+        const results = await pool.query('SELECT * FROM classes WHERE unique_string_id = $1', [req.params.classId]);
+        res.status(200).json(results.rows);
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const addClass = async (req, res) => {    
     try {
         const subjectId = req.params.subjectId;
@@ -62,6 +71,7 @@ export const updateClass = async (req, res) => {
 
 export const getClassesBySubject = async (req, res) => {
     try {
+        console.log('req.params.subjectId:', req.params.subjectId);
         const results = await pool.query('SELECT * FROM classes WHERE subjectid = $1', [req.params.subjectId]);
         res.status(200).json(results.rows);
     } catch (error) {

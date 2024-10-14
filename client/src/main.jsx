@@ -26,12 +26,20 @@ const router = createBrowserRouter([
             { path: '/events/:eventId?=:userType?=:userId', element: <CurrentEvent /> },
             { path: '/:subjectId', element: <Classes /> },
             { path: '/:subjectId/:classId', element: <ClassDetails /> },
-            { path: '/:subjectId/:classId/:unitId', element: <Units /> },
-            { path: '/units', element: <Units /> },
+            // { path: '/:subjectId/:classId/:unitId', element: <Units /> },
+            // { path: '/units', element: <Units /> },
             { path: '*', element: <NotFound /> },
             { path: '/404', element: <NotFound /> },
         ],
     },
+    {
+        path: '/units',
+        element: <Units />,
+        children: [
+            { path: '/units', element: <Units /> },
+            { path: '/units/:subjectId/:classId/:unitId', element: <Units /> },
+        ],
+    }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(

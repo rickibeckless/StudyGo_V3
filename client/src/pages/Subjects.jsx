@@ -42,6 +42,7 @@ export default function Subjects() {
         const classesRes = await fetch(`/api/classes/${subject.unique_string_id}`);
         const classesData = await classesRes.json();
         setClassesBySubject(classesData);
+        console.log(classesData)
 
         setOpenSubjectId(openSubjectId === subject.unique_string_id ? null : subject.unique_string_id);
     };

@@ -153,7 +153,7 @@ function Class({ classObj }) {
 function Unit({ unit }) {
     return (
         <li className="home-unit-item-holder">
-            <a href={`/${unit.subjectid}/${unit.unique_string_id}`} className="home-unit">
+            <a href={`/units/${unit.subjectid}/${unit.classid}/${unit.unique_string_id}`} className="home-unit">
                 {unit.name}
             </a>
         </li>
