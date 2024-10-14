@@ -24,6 +24,6 @@ dist-ssr
 *.sw?
 
 *.env
-reset.js
 databaseDump.json
 exportDatabase.js
+reset.js
