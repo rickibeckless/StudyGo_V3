@@ -40,7 +40,7 @@ export default function UnitFormModal({ subjectId, classId, classes, toggleUnitF
                     <textarea className="modal-input" id="modalPrerequisitesInput" name="prerequisites" placeholder="Prerequisites" rows="4"></textarea>
 
                     <div id="class-form-btn-holder">
-                        <button id="modalCloseButton" type="button" onClick={() => toggleUnitFormModal(subjectId, classId)}>Close</button>
+                        <button id="modalCloseButton" type="button" onClick={(e) => toggleUnitFormModal(e, subjectId, classId)}>Close</button>
                         <button id="modalSubmitButton" type="submit" onClick={(e) => handleSubmit(e)}>Add Unit</button>
                     </div>
                 </form>

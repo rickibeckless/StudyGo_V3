@@ -111,12 +111,15 @@ export default function EventModal({ event, toggleEventModal, currentEvent }) {
                         {!currentEvent ?
                             <div className="event-info-date-time-holder">
                                 <h4 className="event-info-time-title">Time Until Event:</h4>
-                                <p className="event-info-remaining">{formattedDays} days, {formattedHours} hours, {leftoverMinutes} minutes</p>
+                                {timeUntilEventDays > 0 || leftoverHours > 0 || leftoverMinutes > 0 ?
+                                    <p className="event-info-remaining">{formattedDays} days, {formattedHours} hours, {leftoverMinutes} minutes</p>
+                                : <p className="event-info-remaining">Event is happening now!</p>
+                                }
                             </div>
                         : null
                         }
 
-                        {currentEvent ? <button type="button" onClick={() => toggleSigninEventModal()}>Join Event!</button> : null}
+                        {timeUntilEventDays <= 0 && leftoverHours <= 0 && leftoverMinutes <= 0 ? <button type="button" onClick={() => toggleSigninEventModal()}>Join Event!</button> : null}
                         <button type="button" onClick={() => toggleAttendeeRegisterEventModal()}>Register For Event!</button>
                         <button id="modalCloseButton" type="button" onClick={() => toggleEventModal()}>Close</button>
                     </div>

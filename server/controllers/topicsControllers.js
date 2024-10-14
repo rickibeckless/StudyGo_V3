@@ -24,8 +24,8 @@ export const addTopic = async (req, res) => {
         };
 
         const results = await pool.query(
-            'INSERT INTO topics (subjectid, classid, unitid, name, description, notes, terms_defs, lessons, unique_string_id) VALUES ($1, $2, $3, $4, $5, $6::text[], $7::text[], $8::text[], $9) RETURNING *',
-            [subjectId, classId, unitId, name, description, notes, termdefs, lessons, newUniqueId]
+            'INSERT INTO topics (subjectid, classid, unitid, name, description, notes, terms_defs, lessons) VALUES ($1, $2, $3, $4, $5, $6::text[], $7::text[], $8::text[]) RETURNING *',
+            [subjectId, classId, unitId, name, description, notes, termdefs, lessons]
         );
 
         res.status(201).json(results.rows);
@@ -47,6 +47,8 @@ export const addLessonToTopic = async (req, res) => {
         if (existingUniqueIds.includes(newUniqueId)) {
             return res.status(400).json({ message: 'The unique_string_id already exists.' });
         }
+
+        // i need to edit this as generating a new unique id isn't necessary
 
         lesson = {
             ...lesson,

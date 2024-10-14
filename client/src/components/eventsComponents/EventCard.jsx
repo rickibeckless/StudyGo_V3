@@ -53,15 +53,20 @@ export default function EventCard({ event, cardKey, currentEvent, evenOrOdd }) {
                 <div className="event-container">
                     <div className="event-info-holder">
                         <h3 className="event-info-title">{event.event_name}</h3>
-                        {!currentEvent ? <p className="event-info-description">{event.event_description}</p> : <p className="event-info-description">{splicedDescription}</p>}
-                        {/* <p className="event-info-description">{event.event_description}</p> */}
+                        {!currentEvent ? 
+                            <p className="event-info-description">{event.event_description}</p> 
+                        :   <p className="current-event-info-description">{splicedDescription}</p>
+                        }
                         {!currentEvent ?
                             <div className="event-info-date-time-holder">
                                 <p className="event-info-date" title={eventDateFull}>{eventDate}</p>
                                 <p className="event-info-time">{eventTime} — {eventEndTime}</p>
                                 
                                 <h4 className="event-info-time-title">Time Until Event:</h4>
-                                <p className="event-info-remaining">{formattedDays} days, {formattedHours} hours, {leftoverMinutes} minutes</p>
+                                {timeUntilEventDays > 0 || leftoverHours > 0 || leftoverMinutes > 0 ?
+                                    <p className="event-info-remaining">{formattedDays} days, {formattedHours} hours, {leftoverMinutes} minutes</p>
+                                : <p className="event-info-remaining">Event is happening now!</p>
+                                }
                             </div>
                         : null
                         }

@@ -175,8 +175,8 @@ export default function HostEditEventModal({ event, host, toggleEditEventModal }
                                 required
                             />
 
-                            <button type="button" onClick={goToPreviousPage}>Back</button>
                             <button type="button" onClick={goToNextPage}>Next</button>
+                            <button type="button" onClick={goToPreviousPage}>Back</button>
                             <button id="modalCloseButton" type="button" onClick={() => toggleEditEventModal()}>Close</button>
                         </section>
                     )}
@@ -185,8 +185,8 @@ export default function HostEditEventModal({ event, host, toggleEditEventModal }
                         <section className="new-event-form-page" id="confirm-info-page">
                             <h3>Confirm Your Information</h3>
                             <pre>{JSON.stringify(formData, null, 2)}</pre>
-                            <button type="button" onClick={goToPreviousPage}>Back</button>
                             <button type="submit">Update Event</button>
+                            <button type="button" onClick={goToPreviousPage}>Back</button>
                             <button id="modalCloseButton" type="button" onClick={() => toggleEditEventModal()}>Close</button>
                         </section>
                     )}

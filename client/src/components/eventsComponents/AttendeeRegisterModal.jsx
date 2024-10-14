@@ -49,7 +49,7 @@ export default function AttendeeRegisterEventModal({ event, currentEvent, toggle
             if (currentEvent) {
                 toggleAttendeeRegisterEventModal();
                 toggleEventModal();
-                navigate(`/events/${event.event_id}?=${data.attendee_id}`);
+                navigate(`/events/${event.event_id}?=attendee?=${data.attendee_id}`);
             }
 
             toggleAttendeeRegisterEventModal();

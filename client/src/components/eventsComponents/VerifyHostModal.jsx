@@ -36,8 +36,8 @@ export default function VerifyHostModal({ host, setVerifiedHost, toggleVerifyHos
                 <label htmlFor="host_password">Host Password:</label>
                 <input className="modal-input" type="password" id="host_password" name="host_password" required />
 
-                <button type="button" onClick={() => toggleEditEventModal()}>Cancel</button>
                 <button type="submit">Sign In</button>
+                <button type="button" onClick={() => toggleEditEventModal()}>Cancel</button>
             </form>
             {message && <MessagePopup message={message} setMessage={setMessage} />}
         </>

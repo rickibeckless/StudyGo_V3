@@ -1,5 +1,5 @@
 import { pool } from '../config/database.js';
-import { generateUniqueStringId, getAllUniqueIds } from '../data/allUniqueIds.js';
+import { generateUniqueStringId, getAllUniqueIds, getAllIndexes } from '../data/allUniqueIds.js';
 
 export const getClasses = async (req, res) => {
     try {
@@ -10,25 +10,24 @@ export const getClasses = async (req, res) => {
     }
 };
 
-// Route to add a new class
 export const addClass = async (req, res) => {    
     try {
         const subjectId = req.params.subjectId;
-        const { name, description } = req.body;
+        const { name, description, index } = req.body;
         
-        const newUniqueId = generateUniqueStringId();
+        // const newUniqueId = generateUniqueStringId();
         
-        const existingUniqueIds = await getAllUniqueIds();
+        // const existingUniqueIds = await getAllUniqueIds();
 
-        if (existingUniqueIds.includes(newUniqueId)) {
-            return res.status(400).json({ message: 'The unique_string_id already exists.' });
-        }
+        // if (existingUniqueIds.includes(newUniqueId)) {
+        //     return res.status(400).json({ message: 'The unique_string_id already exists.' });
+        // }
 
         const currentTimestamp = new Date();
 
         const results = await pool.query(
-            'INSERT INTO classes (subjectid, name, description, unique_string_id, date_created, date_updated) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', 
-            [subjectId, name, description, newUniqueId, currentTimestamp, currentTimestamp]
+            'INSERT INTO classes (subjectid, name, description, class_index, date_created, date_updated) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', 
+            [subjectId, name, description, index, currentTimestamp, currentTimestamp]
         );
 
         res.status(201).json(results.rows);
@@ -61,7 +60,6 @@ export const updateClass = async (req, res) => {
 };
 
 
-// Route to get classes by subject id
 export const getClassesBySubject = async (req, res) => {
     try {
         const results = await pool.query('SELECT * FROM classes WHERE subjectid = $1', [req.params.subjectId]);
@@ -71,7 +69,6 @@ export const getClassesBySubject = async (req, res) => {
     }
 };
 
-// Route to get units by class id
 export const getUnitsByClass = async (req, res) => {
     try {
         const subjectId = req.params.subjectId;
@@ -85,7 +82,6 @@ export const getUnitsByClass = async (req, res) => {
     }
 };
 
-// Route to get units by unit id
 export const getUnitsById = async (req, res) => {
     try {
         const { subjectId, classId, unitId } = req.params;

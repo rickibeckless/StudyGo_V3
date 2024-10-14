@@ -24,8 +24,8 @@ export const addUnit = async (req, res) => {
         };
 
         const results = await pool.query(
-            'INSERT INTO units (subjectid, classid, name, description, learning_objectives, unit_outcomes, prerequisites, unique_string_id) VALUES ($1, $2, $3, $4, $5::text[], $6, $7, $8) RETURNING *', 
-            [subjectId, classId, name, description, learningObjectives, unitOutcomes, prerequisites, newUniqueId]
+            'INSERT INTO units (subjectid, classid, name, description, learning_objectives, unit_outcomes, prerequisites) VALUES ($1, $2, $3, $4, $5::text[], $6, $7) RETURNING *', 
+            [subjectId, classId, name, description, learningObjectives, unitOutcomes, prerequisites]
         );
 
         res.status(201).json(results.rows);

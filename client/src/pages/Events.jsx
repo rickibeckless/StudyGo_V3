@@ -2,9 +2,9 @@ import { useEffect, useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PageTitle from "../components/PageTitle.jsx";
 import LoadingScreen from "../components/LoadingScreen.jsx";
-import "../styles/events.css";
 import EventCard from "../components/eventsComponents/EventCard.jsx";
 import NewEventModal from "../components/eventsComponents/NewEventModal.jsx";
+import "../styles/events.css";
 import "../styles/eventModals.css";
 
 export default function Events() {
@@ -28,7 +28,6 @@ export default function Events() {
                     const eventDate = new Date(event.event_date_time);
                     return eventDate.toDateString() === currentDate.toDateString();
                 });
-
                 setCurrentEvents(currentEvents);
                 setEvents(data);
                 setLoading(false);

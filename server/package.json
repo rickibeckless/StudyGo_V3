@@ -5,7 +5,8 @@
     "type": "module",
     "scripts": {
         "start": "nodemon --require dotenv/config server.js",
-        "reset": "cd config && node --require dotenv/config reset.js"
+        "reset": "cd config && node --require dotenv/config reset.js",
+        "export": "cd config && node --require dotenv/config exportDatabase.js"
     },
     "keywords": [],
     "author": "",
