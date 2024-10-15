@@ -20,13 +20,13 @@ export default function Units() {
 
     const [currentTopic, setCurrentTopic] = useState(null);
     const [allCurrentSubTopics, setAllCurrentSubTopics] = useState([]);
-    const [currentSubTopicIndex, setCurrentSubTopicIndex] = useState(null);
     const [currentSubTopic, setCurrentSubTopic] = useState(null);
     const [currentSubTopicType, setCurrentSubTopicType] = useState(null);
 
     const [subject, setSubject] = useState([]);
     const [cls, setClass] = useState([]);
     const [unit, setUnit] = useState([]);
+    const [nextUnit, setNextUnit] = useState([]);
     const [topics, setTopics] = useState([]);
 
     const [openSubtopicDropdown, setOpenSubtopicDropdown] = useState(false);
@@ -35,6 +35,7 @@ export default function Units() {
 
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
     const toggleSubtopicDropdown = (e, topic) => {
         e.stopPropagation();
@@ -48,8 +49,6 @@ export default function Units() {
 
         setAllCurrentSubTopics(subTopics);
         //console.log(allCurrentSubTopics);
-
-        setCurrentSubTopicIndex(topic.topic_index);
 
         setOpenSubtopicDropdown(!openSubtopicDropdown);
     };
@@ -77,6 +76,85 @@ export default function Units() {
         setContentType(type);
         setCurrentTopic(null);
     };
+
+    // const goToNextSubTopic = () => {
+    //     console.log("Next sub topic");
+
+    //     console.log("currentTopic: ", currentTopic);
+    //     console.log("currentSubTopic: ", currentSubTopic);
+    // };
+
+    const goToNextSubTopic = () => {
+        if (!currentTopic) {
+            if (contentType === 'overview') {
+                if (topics.length > 0) {
+                    setCurrentTopic(topics[0]);
+                    setCurrentSubTopic(topics[0].notes?.length ? 'notes' : topics[0].terms_defs?.length ? 'terms_defs' : topics[0].lessons[0]);
+                    setCurrentSubTopicType(topics[0].notes?.length ? 'Notes' : topics[0].terms_defs?.length ? 'Terms/Definitions' : 'Lesson');
+                    setDisplaySubTopicContent(true);
+                } else {
+                    setDisplaySubTopicContent(false);
+                    setContentType('summary');
+                };
+            } else if (contentType === 'summary') {
+                if (nextUnit) {
+                    const confirmation = window.confirm("Are you sure you want to go to the next unit?");
+                    
+                    if (confirmation) {
+                        navigate(`/units/${nextUnit.subjectid}/${nextUnit.classid}/${nextUnit.unique_string_id}`);
+                    } else {
+                        // navigate(`/${subjectId}/${classId}`);
+                        return;
+                    };
+                } else {
+                    setMessage("You have reached the end of the units for this class. You will now be redirected to the class page.");
+
+                    setTimeout(() => {
+                        setMessage("");
+                        navigate(`/${subjectId}/${classId}`);
+                    }, 5000);
+                };
+            };
+        } else {
+            const flatSubTopics = [
+                ...(currentTopic.notes?.length ? ['notes'] : []),
+                ...(currentTopic.terms_defs?.length ? ['terms_defs'] : []),
+                ...currentTopic.lessons
+            ];
+        
+            const currentIndex = flatSubTopics.findIndex(subTopic => subTopic === currentSubTopic);
+        
+            const nextSubTopic = flatSubTopics[currentIndex + 1];
+        
+            if (nextSubTopic) {
+                setCurrentSubTopic(nextSubTopic);
+        
+                if (nextSubTopic === 'notes') {
+                    setCurrentSubTopicType('Notes');
+                } else if (nextSubTopic === 'terms_defs') {
+                    setCurrentSubTopicType('Terms/Definitions');
+                } else {
+                    setCurrentSubTopicType('Lesson');
+                }
+        
+                setDisplaySubTopicContent(true);
+            } else {
+                const currentTopicIndex = topics.findIndex(topic => topic.unique_string_id === currentTopic.unique_string_id);
+                const nextTopic = topics[currentTopicIndex + 1];
+
+                if (nextTopic) {
+                    setCurrentTopic(nextTopic);
+                    setCurrentSubTopic(nextTopic.notes?.length ? 'notes' : nextTopic.terms_defs?.length ? 'terms_defs' : nextTopic.lessons[0]);
+                    setCurrentSubTopicType(nextTopic.notes?.length ? 'Notes' : nextTopic.terms_defs?.length ? 'Terms/Definitions' : 'Lesson');
+                    setDisplaySubTopicContent(true);
+                } else {
+                    setDisplaySubTopicContent(false);
+                    setContentType('summary');
+                    setCurrentTopic(null);
+                };
+            };
+        };
+    };    
 
     useEffect(() => {
         async function fetchSubject() {
@@ -107,6 +185,7 @@ export default function Units() {
                 const unit = await res.json();
                 setUnit(unit[0]);
                 fetchTopics(unit[0]);
+                fetchNextUnit(unit[0].unit_index);
             } catch (error) {
                 console.error(error);
             };
@@ -117,16 +196,35 @@ export default function Units() {
                 const res = await fetch(`/api/topics/${subjectId}/${classId}/${unitId}`);
                 const topics = await res.json();
                 setTopics(topics);
+                setLoading(false);
             } catch (error) {
                 console.error(error);
             };
         };
 
+        async function fetchNextUnit(currentUnitIndex) {
+            try {
+                const res = await fetch(`/api/classes/${subjectId}/${classId}`);
+                const units = await res.json();
+
+                const nextUnit = units.find(unit => unit.unit_index === currentUnitIndex + 1);
+                setNextUnit(nextUnit);
+            } catch (error) {
+                console.error(error);
+            };
+        }
+
         fetchSubject();
-    }, []);
+        setDisplaySubTopicContent(false);
+        setContentType('overview');
+        setCurrentTopic(null);
+    }, [loading, subjectId, classId, unitId]);
 
     return (
         <>
+            {loading ? <LoadingScreen /> : null}
+            {message && <MessagePopup message={message} setMessage={setMessage} />}
+            <PageTitle title={`${unit.name} | StudyGo`} />
             <div className="units-container">
                 <UnitsHeader subject={subject} cls={cls} unit={unit} />
                 <aside id="units-left-nav">
@@ -143,7 +241,12 @@ export default function Units() {
                                 {topics.length > 0 ? (
                                     topics.map(topic => (
                                         <>
-                                            <li key={topic.id} className="topic-item" onClick={(e) => toggleSubtopicDropdown(e, topic)}>{topic.name}</li>
+                                            <li key={topic.id} className="topic-item" onClick={(e) => toggleSubtopicDropdown(e, topic)}>
+                                                {topic.name}
+                                                <span className="sub-topic-total-index">
+                                                    {topic.lessons?.length + (topic.notes ? 1 : 0) + (topic.terms_defs ? 1 : 0)}
+                                                </span>
+                                            </li>
 
                                             {currentTopic?.unique_string_id === topic.unique_string_id && (
                                                 <ul className="topic-dropdown">
@@ -164,9 +267,7 @@ export default function Units() {
                                             )}
                                         </>
                                     ))
-                                ) : (
-                                    <li>No topics available!</li>
-                                )}
+                                ) : null}
                             </div>
                             <li className="topic-item" onClick={(e) => displayOverviewOrSummary(e, 'summary')}>Summary</li>
                         </ul>
@@ -188,6 +289,8 @@ export default function Units() {
                                 <li className="units-current-topic-holder">Summary</li>
                             ) : null
                             }
+
+                            <button type="button" id="next-sub-topic-btn" onClick={() => goToNextSubTopic()}>Next</button>
                         </ul>
                         <div id="custom-right-nav-border"></div>
                     </nav>

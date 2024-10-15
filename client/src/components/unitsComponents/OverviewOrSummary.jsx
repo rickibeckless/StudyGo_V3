@@ -11,14 +11,13 @@ export default function OverviewOrSummary({ contentType, unit }) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        setLoading(false);
-    }, []);
-
-    console.log("contentType: ", contentType);
+        if (unit.description && unit.prerequisites && unit.learning_objectives && unit.unit_outcomes) {
+            setLoading(false);
+        }
+    }, [loading, unit]);
 
     return (
         <>
-            {loading ? <LoadingScreen /> : null}
             {message && <MessagePopup message={message} setMessage={setMessage} />}
 
             {contentType === 'overview' ? (
@@ -31,7 +30,7 @@ export default function OverviewOrSummary({ contentType, unit }) {
 
                     <dt className="learning-objectives-title">Learning Objectives:</dt>
                     <ul className="learning-objectives">
-                        {unit.learning_objectives.map((objective, index) => (
+                        {unit.learning_objectives?.map((objective, index) => (
                             <li key={index} className="objective-item">{objective}</li>
                         ))}
                     </ul>

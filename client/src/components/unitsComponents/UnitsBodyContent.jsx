@@ -14,14 +14,8 @@ export default function UnitsBodyContent({ topic, currentSubTopic, subTopics }) 
         setLoading(false);
     }, []);
 
-    console.log("topic: ", topic);
-    console.log("currentSubTopic: ", currentSubTopic);
-
-    console.log("subTopics: ", subTopics);
-
     return (
         <>
-            {loading ? <LoadingScreen /> : null}
             {message && <MessagePopup message={message} setMessage={setMessage} />}
 
             {currentSubTopic === 'notes' ? (
@@ -38,13 +32,13 @@ export default function UnitsBodyContent({ topic, currentSubTopic, subTopics }) 
                             {Array.isArray(term_def.definition) ? (
                                 term_def.definition.map((definition, index) => (
                                     <li key={index} className="definition">
-                                        <span class="definition-bullet">★</span>
+                                        <span className="definition-bullet">★</span>
                                         {definition}
                                     </li>
                                 ))
                             ) : (
                                 <li className="definition">
-                                    <span class="definition-bullet">★</span>
+                                    <span className="definition-bullet">★</span>
                                     {term_def.definition}
                                 </li>
                             )}
