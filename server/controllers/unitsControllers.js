@@ -6,8 +6,20 @@ export const getUnits = async (req, res) => {
         const results = await pool.query('SELECT * FROM units');
         res.status(200).json(results.rows);
     } catch (error) {
-        throw error;
-    }
+        console.error('Error fetching units:', error);
+        res.status(500).json({ message: 'Error fetching units', error });
+    };
+};
+
+export const getUnitsByClassId = async (req, res) => {
+    try {
+        const results = await pool.query('SELECT * FROM units WHERE classid = $1', [req.params.classId]);
+
+        res.status(200).json(results.rows);
+    } catch (error) {
+        console.error('Error fetching units by class id:', error);
+        res.status(500).json({ message: 'Error fetching units by class id', error });
+    };
 };
 
 export const addUnit = async (req, res) => {
@@ -32,23 +44,35 @@ export const addUnit = async (req, res) => {
     } catch (error) {
         console.error('Error adding unit:', error);
         res.status(500).json({ message: 'Error adding unit', error });
-    }
+    };
 };
 
 export const getUnitById = async (req, res) => {
     try {
         const results = await pool.query('SELECT * FROM units WHERE unique_string_id = $1', [req.params.unitId]);
+
+        if (results.rows.length === 0) {
+            return res.status(404).json({ message: 'Unit not found' });
+        };
+
         res.status(200).json(results.rows);
     } catch (error) {
-        throw error;
-    }
+        console.error('Error fetching unit by ID:', error);
+        res.status(500).json({ message: 'Error fetching unit by ID', error });
+    };
 };
 
 export const getTopicById = async (req, res) => {
     try {
         const results = await pool.query('SELECT * FROM topics WHERE unique_string_id = $1', [req.params.topicId]);
+
+        if (results.rows.length === 0) {
+            return res.status(404).json({ message: 'Topic not found' });
+        };
+
         res.status(200).json(results.rows);
     } catch (error) {
-        throw error;
-    }
+        console.error('Error fetching topic by ID:', error);
+        res.status(500).json({ message: 'Error fetching topic by ID', error });
+    };
 };

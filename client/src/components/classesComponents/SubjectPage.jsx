@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import PageTitle from "../PageTitle.jsx";
+import MessagePopup from "../MessagePopup.jsx";
 import LoadingScreen from "../LoadingScreen.jsx";
 import UnitFormModal from "./UnitFormModal.jsx";
 
@@ -13,6 +14,9 @@ export default function SubjectPage({ subjectId }) {
     const [unitFormModalIds, setUnitFormModalIds] = useState({ subjectId: null, classId: null });
     const [openClassId, setOpenClassId] = useState(null);
     const [openUnitId, setOpenUnitId] = useState(null);
+
+    const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
     const toggleUnitFormModal = (e, subjectId, classId) => {
         e.stopPropagation();
@@ -37,26 +41,37 @@ export default function SubjectPage({ subjectId }) {
     };
 
     useEffect(() => {
-        const fetchSubject = async () => {
-            const subjectRes = await fetch(`/api/subjects/${subjectId}`);
-            const subjectData = await subjectRes.json();
-            setSubject(subjectData[0]);
-        };
+        try {
+            const fetchSubject = async () => {
+                const subjectRes = await fetch(`/api/subjects/${subjectId}`);
+                if (subjectRes.status === 404 || subjectRes.status === 500) {
+                    navigate('/404');
+                };
+    
+                const subjectData = await subjectRes.json();
+    
+                setSubject(subjectData[0]);
+            };
+    
+            const fetchClasses = async () => {
+                const classesRes = await fetch(`/api/classes/${subjectId}`);
+                const classesData = await classesRes.json();
+                setClasses(classesData);
+    
+                classesData.forEach(cls => fetchUnits(cls.unique_string_id));
+            };
+    
+            fetchSubject();
+            fetchClasses();
+        } catch (error) {
+            console.error('Error fetching subject:', error);
+            setMessage('Error fetching subject');
+        }
 
-        const fetchClasses = async () => {
-            const classesRes = await fetch(`/api/classes/${subjectId}`);
-            const classesData = await classesRes.json();
-            setClasses(classesData);
-
-            classesData.forEach(cls => fetchUnits(cls.unique_string_id));
-        };
-
-        fetchSubject();
-        fetchClasses();
     }, [subjectId]);
 
     const fetchUnits = async (classId) => {
-        const unitsRes = await fetch(`/api/classes/${subjectId}/${classId}`);
+        const unitsRes = await fetch(`/api/units/${subjectId}/${classId}`);
         const unitsData = await unitsRes.json();
 
         setUnitsByClass(prevState => ({
@@ -84,6 +99,7 @@ export default function SubjectPage({ subjectId }) {
     return (
         <>
             <PageTitle title={`${subject.name} Classes | StudyGo`} />
+            {message && <MessagePopup message={message} setMessage={setMessage} />}
             <h2>All {subject.name} Classes</h2>
             <ul id="subject-list">
                 {classes === null && <LoadingScreen />}
@@ -131,7 +147,7 @@ export default function SubjectPage({ subjectId }) {
                                                 <li className="class">No Units Available!</li>
                                             </div>
                                         ) : (
-                                            unitsByClass[cls.unique_string_id].map(unit => (
+                                            unitsByClass[cls.unique_string_id]?.map(unit => (
                                                 <div className="class-holder" key={unit.unique_string_id}>
                                                     <li className="class" onClick={(e) => toggleTopicsDropdown(e, unit.unique_string_id)}>
                                                         {unit.name}
@@ -142,7 +158,7 @@ export default function SubjectPage({ subjectId }) {
                                                             {topicsByUnit[unit.unique_string_id] ? (
                                                                 topicsByUnit[unit.unique_string_id].map(topic => (
                                                                     <li className="unit-item-holder" key={topic.unique_string_id} onClick={(e) => e.stopPropagation()}>
-                                                                        <a href={`${unit.subjectid}/${unit.classid}/${unit.unique_string_id}`}
+                                                                        <a href={`/units/${unit.subjectid}/${unit.classid}/${unit.unique_string_id}`}
                                                                             title={`${window.location.origin}/${unit.subjectid}/${unit.classid}/${unit.unique_string_id}`}
                                                                             className="unit"
                                                                         >

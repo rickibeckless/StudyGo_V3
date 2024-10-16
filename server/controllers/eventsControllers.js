@@ -72,6 +72,10 @@ export const getEvents = async (req, res) => {
             ORDER BY event_date_time ASC
         `, [now]);
 
+        if (results.rows.length === 0) {
+            return res.status(404).json({ message: 'No events found' });
+        };
+
         res.status(200).json(results.rows);
     } catch (error) {
         console.error('Error fetching events:', error);
@@ -83,9 +87,15 @@ export const getEventHost = async (req, res) => {
     try {
         const { hostId } = req.params;
         const results = await pool.query('SELECT * FROM hosts WHERE host_id = $1', [hostId]);
+
+        if (results.rows.length === 0) {
+            return res.status(404).json({ message: 'Host not found' });
+        };
+
         res.status(200).json(results.rows);
     } catch (error) {
-        throw error;
+        console.error('Error fetching event host:', error);
+        res.status(500).json({ message: 'Error fetching host', error });
     };
 };
 
@@ -93,9 +103,15 @@ export const getEventAttendees = async (req, res) => {
     try {
         const { eventId } = req.params;
         const results = await pool.query('SELECT * FROM attendees WHERE event_id = $1', [eventId]);
+
+        if (results.rows.length === 0) {
+            return res.status(404).json({ message: 'Attendees not found' });
+        };
+
         res.status(200).json(results.rows);
     } catch (error) {
-        throw error;
+        console.error('Error fetching attendees:', error);
+        res.status(500).json({ message: 'Error fetching attendees', error });
     };
 };
 

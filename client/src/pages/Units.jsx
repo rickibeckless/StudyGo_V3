@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import LoadingScreen from "../components/LoadingScreen.jsx";
@@ -13,10 +13,6 @@ import '../styles/units.css';
 
 export default function Units() {
     const { subjectId, classId, unitId } = useParams();
-    // const currentTopic = localStorage.getItem('currentTopic');
-    // const currentSubTopicType = localStorage.getItem('currentSubTopicType');
-    // const currentSubTopicId = localStorage.getItem('currentSubTopic-topicId');
-    // const currentSubTopicFullId = localStorage.getItem('currentSubTopic-id');
 
     const [currentTopic, setCurrentTopic] = useState(null);
     const [allCurrentSubTopics, setAllCurrentSubTopics] = useState([]);
@@ -39,7 +35,6 @@ export default function Units() {
 
     const toggleSubtopicDropdown = (e, topic) => {
         e.stopPropagation();
-        //console.log(topic);
         setCurrentTopic(topic);
 
         let subTopics = [];
@@ -48,15 +43,11 @@ export default function Units() {
         subTopics.push(topic.terms_defs);
 
         setAllCurrentSubTopics(subTopics);
-        //console.log(allCurrentSubTopics);
-
         setOpenSubtopicDropdown(!openSubtopicDropdown);
     };
 
     const openSubTopic = async (e, currentTopic, subTopic) => {
         e.stopPropagation();
-        //console.log(currentTopic);
-        //console.log(subTopic);
         setCurrentSubTopic(subTopic);
 
         if (subTopic === 'notes') {
@@ -65,7 +56,7 @@ export default function Units() {
             setCurrentSubTopicType('Terms/Definitions');
         } else {
             setCurrentSubTopicType('Lesson');
-        }
+        };
 
         setDisplaySubTopicContent(true);
     };
@@ -76,13 +67,6 @@ export default function Units() {
         setContentType(type);
         setCurrentTopic(null);
     };
-
-    // const goToNextSubTopic = () => {
-    //     console.log("Next sub topic");
-
-    //     console.log("currentTopic: ", currentTopic);
-    //     console.log("currentSubTopic: ", currentSubTopic);
-    // };
 
     const goToNextSubTopic = () => {
         if (!currentTopic) {
@@ -135,7 +119,7 @@ export default function Units() {
                     setCurrentSubTopicType('Terms/Definitions');
                 } else {
                     setCurrentSubTopicType('Lesson');
-                }
+                };
         
                 setDisplaySubTopicContent(true);
             } else {
@@ -170,7 +154,7 @@ export default function Units() {
 
         async function fetchClass() {
             try {
-                const res = await fetch(`/api/classes/${classId}`);
+                const res = await fetch(`/api/classes/${subjectId}/${classId}`);
                 const cls = await res.json();
                 setClass(cls[0]);
                 fetchUnit();
@@ -204,15 +188,14 @@ export default function Units() {
 
         async function fetchNextUnit(currentUnitIndex) {
             try {
-                const res = await fetch(`/api/classes/${subjectId}/${classId}`);
+                const res = await fetch(`/api/units/${subjectId}/${classId}`);
                 const units = await res.json();
-
                 const nextUnit = units.find(unit => unit.unit_index === currentUnitIndex + 1);
                 setNextUnit(nextUnit);
             } catch (error) {
                 console.error(error);
             };
-        }
+        };
 
         fetchSubject();
         setDisplaySubTopicContent(false);

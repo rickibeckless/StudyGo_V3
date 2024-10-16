@@ -4,7 +4,7 @@ Submitted by: **Ricki Beckless**
 
 About this web app: **StudyGo v3 is a web app designed to help users efficiently explore subjects, classes, and units within an educational framework. It utilizes a PostgreSQL database for structured data management, ensuring that all information is well-organized. Built with React, the app provides a straightforward interface that allows users to click on a subject to reveal related classes, and further expand to see associated units. Each detail page has its own unique URL for easy navigation.**
 
-Time spent: **42** hours
+Time spent: **43** hours
 
 ## Required Features
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PageTitle from "../components/PageTitle.jsx";
 import LoadingScreen from "../components/LoadingScreen.jsx";
 import MessagePopup from "../components/MessagePopup.jsx";
@@ -15,7 +15,6 @@ export default function Subjects() {
 
     const [subjects, setSubjects] = useState([]);
     const [classes, setClasses] = useState([]);
-    const [units, setUnits] = useState([]);
 
     const [classesBySubject, setClassesBySubject] = useState([]);
     const [unitsByClass, setUnitsByClass] = useState([]);
@@ -42,7 +41,6 @@ export default function Subjects() {
         const classesRes = await fetch(`/api/classes/${subject.unique_string_id}`);
         const classesData = await classesRes.json();
         setClassesBySubject(classesData);
-        console.log(classesData)
 
         setOpenSubjectId(openSubjectId === subject.unique_string_id ? null : subject.unique_string_id);
     };
@@ -51,7 +49,7 @@ export default function Subjects() {
         e.stopPropagation();
         setOpenUnitDropdown(!openUnitDropdown);
 
-        const unitsRes = await fetch(`/api/classes/${cls.subjectid}/${cls.unique_string_id}`);
+        const unitsRes = await fetch(`/api/units/${cls.subjectid}/${cls.unique_string_id}`);
         const unitsData = await unitsRes.json();
         setUnitsByClass(unitsData);
 
@@ -63,6 +61,11 @@ export default function Subjects() {
             try {
                 const subjectsRes = await fetch(`/api/subjects/`);
                 const subjectData = await subjectsRes.json();
+
+                if (!subjectData) {
+                    setLoading(false);
+                    navigate("/404");
+                };
 
                 setSubjects(subjectData);
 
@@ -86,8 +89,8 @@ export default function Subjects() {
             } catch (error) {
                 setLoading(false);
                 setMessage("Error getting classes: ", error.message);
-            }
-        }
+            };
+        };
 
         fetchSubjects();
         fetchClasses();
@@ -176,7 +179,7 @@ export default function Subjects() {
                                                                 ) : (
                                                                     unitsByClass.map(unit => (
                                                                         <li className="unit-item-holder">
-                                                                            <a className="unit" href={`/${unit.subjectid}/${unit.classid}/${unit.unique_string_id}`}>{unit.name}</a>
+                                                                            <a className="unit" href={`/units/${unit.subjectid}/${unit.classid}/${unit.unique_string_id}`}>{unit.name}</a>
                                                                         </li>
                                                                     ))
                                                                 )}

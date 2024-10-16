@@ -118,7 +118,7 @@ function Class({ classObj }) {
     const [units, setUnits] = useState([]);
 
     const fetchUnits = async () => {
-        const res = await fetch(`/api/classes/${classObj.subjectid}/${classObj.unique_string_id}`);
+        const res = await fetch(`/api/units/${classObj.subjectid}/${classObj.unique_string_id}`);
         const units = await res.json();
         setUnits(units);
     };

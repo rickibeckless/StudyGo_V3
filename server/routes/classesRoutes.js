@@ -6,10 +6,10 @@ const router = express.Router();
 // /api/classes
 
 router.get('/', getClasses);
-router.get('/:classId', getClassById);
+router.get('/:subjectId/:classId', getClassById);
 router.get('/:subjectId', getClassesBySubject);
 router.post('/:subjectId/new', addClass);
-router.get('/:subjectId/:classId', getUnitsByClass);
+//router.get('/:subjectId/:classId', getUnitsByClass);
 router.get('/:subjectId/:classId/:unitId', getUnitsById);
 
 export default router;
