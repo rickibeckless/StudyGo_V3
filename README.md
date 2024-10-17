@@ -4,7 +4,7 @@ Submitted by: **Ricki Beckless**
 
 About this web app: **StudyGo v3 is a web app designed to help users efficiently explore subjects, classes, and units within an educational framework. It utilizes a PostgreSQL database for structured data management, ensuring that all information is well-organized. Built with React, the app provides a straightforward interface that allows users to click on a subject to reveal related classes, and further expand to see associated units. Each detail page has its own unique URL for easy navigation.**
 
-Time spent: **43** hours
+Time spent: **45** hours
 
 ## Required Features
 
@@ -31,13 +31,15 @@ The following **optional** features are implemented:
 
 Here's a walkthrough of implemented required features:
 
+![StudyGov3](https://i.ibb.co/hsjcYYs/Code-Path-Study-Go-v2-p3-Walkthrough2.gif)
 
+GIF also found at [StudyGo_v3](https://i.ibb.co/hsjcYYs/Code-Path-Study-Go-v2-p3-Walkthrough2.gif) on ImgBB
 
 GIF created with [ScreenToGif](https://www.screentogif.com/) for Windows
 
 ## Notes
 
-Describe any challenges encountered while building the app or any additional context you'd like to add.
+Building off of the project from Units 1-3, I again modified my approach to the project requirements. The project was based around cars and car customization, and while I neglected the idea of cars I did hold on to the customization features, some of which can be observed on the Events page and others to be implemented on the Units page.
 
 ## License
 

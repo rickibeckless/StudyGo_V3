@@ -4,6 +4,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App.jsx';
 import './index.css';
 
+// context
+import { FetchProvider } from './context/FetchProvider.jsx';
+
 // Import Pages
 import NotFound from './pages/NotFound.jsx';
 import Home from './pages/Home.jsx';
@@ -44,6 +47,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <RouterProvider router={router} />
+        <FetchProvider>
+            <RouterProvider router={router} />
+        </FetchProvider>
     </React.StrictMode>
 );

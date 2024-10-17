@@ -1,14 +1,19 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { FetchContext } from "../context/FetchProvider.jsx";
 import PageTitle from "../components/PageTitle.jsx";
 import LoadingScreen from "../components/LoadingScreen.jsx";
+import MessagePopup from "../components/MessagePopup.jsx";
 import EventCard from "../components/eventsComponents/EventCard.jsx";
 import NewEventModal from "../components/eventsComponents/NewEventModal.jsx";
 import "../styles/events.css";
 import "../styles/eventModals.css";
 
 export default function Events() {
+    const { fetchWithRetry } = useContext(FetchContext);
     const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState("");
+
     const [events, setEvents] = useState([]);
     const [currentEvents, setCurrentEvents] = useState([]);
     const [openNewEventModal, setOpenNewEventModal] = useState(false);
@@ -21,8 +26,9 @@ export default function Events() {
     useEffect(() => {
         async function fetchEvents() {
             try {
-                const response = await fetch("/api/events");
-                const data = await response.json();
+                const data = await fetchWithRetry('/api/events');
+                //const data = await response.json();
+
                 const currentDate = new Date();
                 const currentEvents = data.filter(event => {
                     const eventDate = new Date(event.event_date_time);
@@ -42,7 +48,9 @@ export default function Events() {
     return (
         <main id="events-body" className="container">
             {loading ? <LoadingScreen /> : null}
+            {message ? <MessagePopup message={message} /> : null}
             <PageTitle title="All Events | StudyGo" />
+            
             {/* <aside id="subjects-filter-holder">
                 <p id="subject-clear-btn" onClick={() => { clearSearchAndFilters() }}>clear filters</p>
                 <form id="events-search-form">

@@ -1,5 +1,9 @@
-#main-body {
+#class-details-body {
     padding: 0 2rem;
+}
+
+#class-details-body li {
+    list-style-type: none;
 }
 
 #class-section {
@@ -54,10 +58,6 @@
     max-width: 80vw;
     margin: 2vh auto;
     box-shadow: 3px 5px 5px #0000001a;
-}
-
-.unit-holder li {
-    list-style-type: none;
 }
 
 .unit-holder .unit-name {
@@ -124,7 +124,7 @@
 }
 
 .topic-holder .topic-name:hover,
-.lesson-holder .lesson-name:hover {
+.classes-lesson-holder .classes-lesson-name:hover {
     color: #0073e6;
 }
 
@@ -136,13 +136,13 @@
 
 .topic-holder .topic-name,
 .topic-holder .topic-description,
-.lesson-holder .lesson-description,
-.lesson-holder .lesson-name {
+.classes-lesson-holder .classes-lesson-description,
+.classes-lesson-holder .classes-lesson-name {
     transition: all 0.2s;
 }
 
 .topic-holder .topic-description:hover,
-.lesson-holder .lesson-description:hover {
+.classes-lesson-holder .classes-lesson-description:hover {
     border-left: 5px solid #0073e6;
     border-radius: 5px;
     background-color: #f0f0f0;
@@ -156,7 +156,7 @@
     margin-left: 4rem;
 }
 
-.lesson-holder {
+.classes-lesson-holder {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -166,7 +166,7 @@
     box-shadow: 3px 3px 5px #0000001a;
 }
 
-.lesson-holder .lesson-name {
+.classes-lesson-holder .classes-lesson-name {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -177,7 +177,7 @@
     font-weight: 400;
 }
 
-.lesson-holder .lesson-description {
+.classes-lesson-holder .classes-lesson-description {
     font-size: 1rem;
     color: #383838;
     font-style: italic;
@@ -185,25 +185,12 @@
 
 .add-lesson-button,
 .delete-lesson-button {
-    margin-left: auto;
     padding: 0.5rem 1rem;
-    color: #ffffff;
-    border: none;
-    border-radius: 0.3rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.add-lesson-button {
-    background-color: #0073e6;
+    font-size: .85rem;
 }
 
 .delete-lesson-button {
     background-color: #ff0000;
-}
-
-.add-lesson-button:hover {
-    background-color: #005bb5;
 }
 
 .delete-lesson-button:hover {

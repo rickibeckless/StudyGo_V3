@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { FetchContext } from "../context/FetchProvider.jsx";
 import PageTitle from "../components/PageTitle.jsx";
-import "../styles/home.css";
 import LoadingScreen from "../components/LoadingScreen.jsx";
+import MessagePopup from "../components/MessagePopup.jsx";
+import "../styles/home.css";
 
 export default function Home() {
     const handleButtonClick = () => {
@@ -9,66 +11,74 @@ export default function Home() {
         homeSectionBtn.scrollIntoView({ behavior: 'smooth' });
     };
 
+    const { fetchWithRetry } = useContext(FetchContext);
+    const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState("");
+
     const [subjects, setSubjects] = useState([]);
     const [classes, setClasses] = useState([]);
 
     useEffect(() => {
+        const fetchSubjects = async () => {
+            const subjects = await fetchWithRetry('/api/subjects');
+            //const subjects = await subjectsRes.json();
+
+            const classes = await fetchWithRetry('/api/classes');
+            //const classes = await classesRes.json();
+            
+            setClasses(classes);
+
+            const classesSubIdsSet = new Set(classes.map(clsObj => clsObj.subjectid));
+            const filteredSubjects = subjects.filter(subject => classesSubIdsSet.has(subject.unique_string_id));
+            filteredSubjects.splice(5);
+            setSubjects(filteredSubjects);
+            setLoading(false);
+        };
+
         fetchSubjects();
-    }, []);
-
-    const fetchSubjects = async () => {
-        const subjectsRes = await fetch('/api/subjects');
-        const subjects = await subjectsRes.json();
-
-        const classesRes = await fetch(`/api/classes`);
-        const classes = await classesRes.json();
-        
-        setClasses(classes);
-
-        const classesSubIdsSet = new Set(classes.map(clsObj => clsObj.subjectid));
-        const filteredSubjects = subjects.filter(subject => classesSubIdsSet.has(subject.unique_string_id));
-        filteredSubjects.splice(5);
-        setSubjects(filteredSubjects);
-    };
+    }, [fetchWithRetry]);
 
     return (
-        <main id="home-body" className="container">
+        <>
+            {loading && <LoadingScreen />}
             <PageTitle title="StudyGo" />
-            <section id="home-section">
-                <h2 id="home-section-title">Welcome to StudyGo</h2>
-                <p id="home-section-description">The best place to learn and study online.</p>
-                <button
-                    id="home-section-button"
-                    className="button"
-                    type="button"
-                    onClick={handleButtonClick}
-                >
-                    Get Started
-                </button>
-            </section>
 
-            <section id="home-subjects-section">
-                <h2>Top 5 Subjects</h2>
-                <ul id="home-subject-list">
-                    {subjects === null && <LoadingScreen />}
+            <main id="home-body" className="container">
+                <section id="home-section">
+                    <h2 id="home-section-title">Welcome to StudyGo</h2>
+                    <p id="home-section-description">The best place to learn and study online.</p>
+                    <button
+                        id="home-section-button"
+                        className="button"
+                        type="button"
+                        onClick={handleButtonClick}
+                    >
+                        Get Started
+                    </button>
+                </section>
 
-                    {subjects.length === 0 ? (
-                        <>
-                            <li id="default-li">Nothing yet! <a href="#">Add some subjects</a> to get started!</li>
-                            <LoadingScreen />
-                        </>
-                    ) : (
-                        subjects.map(subject => (
-                            <Subject
-                                key={subject.unique_string_id}
-                                subject={subject}
-                                classes={classes.filter(cls => cls.subjectid === subject.unique_string_id)}
-                            />
-                        ))
-                    )}
-                </ul>
-            </section>
-        </main>
+                <section id="home-subjects-section">
+                    <h2>Top 5 Subjects</h2>
+                    <ul id="home-subject-list">
+                        {subjects.length === 0 ? (
+                            <>
+                                <li id="default-li">Nothing yet! <a href="#">Add some subjects</a> to get started!</li>
+                            </>
+                        ) : (
+                            subjects.map(subject => (
+                                <Subject
+                                    key={subject.unique_string_id}
+                                    subject={subject}
+                                    classes={classes.filter(cls => cls.subjectid === subject.unique_string_id)}
+                                />
+                            ))
+                        )}
+                    </ul>
+                </section>
+            </main>
+
+            {message && <MessagePopup message={message} />}
+        </>
     );
 };
 
@@ -79,12 +89,6 @@ function Subject({ subject, classes }) {
     const toggleClasses = () => {
         setShowClasses(!showClasses);
         setShowDescription(!showDescription);
-    };
-
-    if (!classes) {
-        return (
-            <LoadingScreen />
-        );
     };
 
     return (

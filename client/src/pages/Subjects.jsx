@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { FetchContext } from "../context/FetchProvider.jsx";
 import PageTitle from "../components/PageTitle.jsx";
 import LoadingScreen from "../components/LoadingScreen.jsx";
 import MessagePopup from "../components/MessagePopup.jsx";
@@ -8,6 +9,7 @@ import "../styles/subjects.css";
 import NewClassModal from "../components/subjectsComponents/NewClassModal.jsx";
 
 export default function Subjects() {
+    const { fetchWithRetry } = useContext(FetchContext);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
 
@@ -38,8 +40,8 @@ export default function Subjects() {
         e.stopPropagation();
         setOpenClassDropdown(!openClassDropdown);
 
-        const classesRes = await fetch(`/api/classes/${subject.unique_string_id}`);
-        const classesData = await classesRes.json();
+        const classesData = await fetchWithRetry(`/api/classes/${subject.unique_string_id}`);
+        //const classesData = await classesRes.json();
         setClassesBySubject(classesData);
 
         setOpenSubjectId(openSubjectId === subject.unique_string_id ? null : subject.unique_string_id);
@@ -49,8 +51,8 @@ export default function Subjects() {
         e.stopPropagation();
         setOpenUnitDropdown(!openUnitDropdown);
 
-        const unitsRes = await fetch(`/api/units/${cls.subjectid}/${cls.unique_string_id}`);
-        const unitsData = await unitsRes.json();
+        const unitsData = await fetchWithRetry(`/api/units/${cls.subjectid}/${cls.unique_string_id}`);
+        //const unitsData = await unitsRes.json();
         setUnitsByClass(unitsData);
 
         setOpenClassId(openClassId === cls.unique_string_id ? null : cls.unique_string_id);
@@ -59,8 +61,8 @@ export default function Subjects() {
     useEffect(() => {
         async function fetchSubjects() {
             try {
-                const subjectsRes = await fetch(`/api/subjects/`);
-                const subjectData = await subjectsRes.json();
+                const subjectData = await fetchWithRetry(`/api/subjects/`);
+                //const subjectData = await subjectsRes.json();
 
                 if (!subjectData) {
                     setLoading(false);
@@ -80,8 +82,8 @@ export default function Subjects() {
             try {
                 setLoading(true);
 
-                const classesRes = await fetch(`/api/classes/`);
-                const classesData = await classesRes.json();
+                const classesData = await fetchWithRetry(`/api/classes/`);
+                //const classesData = await classesRes.json();
 
                 setClasses(classesData);
 

@@ -24,9 +24,11 @@ import MessagePopup from "../components/MessagePopup.jsx";
 import "./StyleTemplate.css"; // note: styles will be global, so use unique class and/or id names
 
 // some pages may also need to import utils, hooks, or context
+import { FetchContext } from "../context/FetchProvider.jsx"; // context used to fetch data from the server
 import '../utils/validators.js'; // note: this validator is for the classes pages url validation
 
 export default function PageTemplate() {
+    const { fetchWithRetry } = useContext(FetchContext); // context used to fetch data from the server
     const [loading, setLoading] = useState(true); // set to false when done loading
     const [message, setMessage] = useState(""); // set to message to display in message popup
 

@@ -16,5 +16,20 @@ body,
 }
 
 button {
+    display: inline-block;
+    background-color: #0073e6;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
     cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #005bb5;
+}
+
+button:active {
+    background-color: #004e9d;
 }

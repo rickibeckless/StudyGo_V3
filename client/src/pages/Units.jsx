@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { FetchContext } from "../context/FetchProvider.jsx";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import LoadingScreen from "../components/LoadingScreen.jsx";
@@ -12,8 +13,13 @@ import Footer from "../components/Footer.jsx";
 import '../styles/units.css';
 
 export default function Units() {
-    const { subjectId, classId, unitId } = useParams();
+    const { fetchWithRetry } = useContext(FetchContext);
+    const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
+    const { subjectId, classId, unitId } = useParams();
+    
     const [currentTopic, setCurrentTopic] = useState(null);
     const [allCurrentSubTopics, setAllCurrentSubTopics] = useState([]);
     const [currentSubTopic, setCurrentSubTopic] = useState(null);
@@ -28,10 +34,6 @@ export default function Units() {
     const [openSubtopicDropdown, setOpenSubtopicDropdown] = useState(false);
     const [displaySubTopicContent, setDisplaySubTopicContent] = useState(false);
     const [contentType, setContentType] = useState("overview");
-
-    const [loading, setLoading] = useState(true);
-    const [message, setMessage] = useState("");
-    const navigate = useNavigate();
 
     const toggleSubtopicDropdown = (e, topic) => {
         e.stopPropagation();
@@ -143,8 +145,8 @@ export default function Units() {
     useEffect(() => {
         async function fetchSubject() {
             try {
-                const res = await fetch(`/api/subjects/${subjectId}`);
-                const subject = await res.json();
+                const subject = await fetchWithRetry(`/api/subjects/${subjectId}`);
+                //const subject = await res.json();
                 setSubject(subject[0]);
                 fetchClass();
             } catch (error) {
@@ -154,8 +156,8 @@ export default function Units() {
 
         async function fetchClass() {
             try {
-                const res = await fetch(`/api/classes/${subjectId}/${classId}`);
-                const cls = await res.json();
+                const cls = await fetchWithRetry(`/api/classes/${subjectId}/${classId}`);
+                //const cls = await res.json();
                 setClass(cls[0]);
                 fetchUnit();
             } catch (error) {
@@ -165,8 +167,8 @@ export default function Units() {
 
         async function fetchUnit() {
             try {
-                const res = await fetch(`/api/units/${subjectId}/${classId}/${unitId}`);
-                const unit = await res.json();
+                const unit = await fetchWithRetry(`/api/units/${subjectId}/${classId}/${unitId}`);
+                //const unit = await res.json();
                 setUnit(unit[0]);
                 fetchTopics(unit[0]);
                 fetchNextUnit(unit[0].unit_index);
@@ -177,8 +179,8 @@ export default function Units() {
 
         async function fetchTopics(unit) {
             try {
-                const res = await fetch(`/api/topics/${subjectId}/${classId}/${unitId}`);
-                const topics = await res.json();
+                const topics = await fetchWithRetry(`/api/topics/${subjectId}/${classId}/${unitId}`);
+                //const topics = await res.json();
                 setTopics(topics);
                 setLoading(false);
             } catch (error) {
@@ -188,8 +190,8 @@ export default function Units() {
 
         async function fetchNextUnit(currentUnitIndex) {
             try {
-                const res = await fetch(`/api/units/${subjectId}/${classId}`);
-                const units = await res.json();
+                const units = await fetchWithRetry(`/api/units/${subjectId}/${classId}`);
+                //const units = await res.json();
                 const nextUnit = units.find(unit => unit.unit_index === currentUnitIndex + 1);
                 setNextUnit(nextUnit);
             } catch (error) {
@@ -234,15 +236,15 @@ export default function Units() {
                                             {currentTopic?.unique_string_id === topic.unique_string_id && (
                                                 <ul className="topic-dropdown">
                                                     {currentTopic?.notes.length > 0 && (
-                                                        <li className="sub-topic-item" onClick={(e) => openSubTopic(e, currentTopic, 'notes')}>Notes</li>
+                                                        <li className={`sub-topic-item ${currentSubTopic === 'notes' ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, 'notes')}>Notes</li>
                                                     )}
                                                     {currentTopic?.terms_defs.length > 0 && (
-                                                        <li className="sub-topic-item" onClick={(e) => openSubTopic(e, currentTopic, 'terms_defs')}>Term/Definitions</li>
+                                                        <li className={`sub-topic-item ${currentSubTopic === 'terms_defs' ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, 'terms_defs')}>Term/Definitions</li>
                                                     )}
                                                     {currentTopic?.lessons.length > 0 && (
                                                         <>
                                                             {currentTopic.lessons.map((lesson, index) => (
-                                                                <li className="sub-topic-item" onClick={(e) => openSubTopic(e, currentTopic, lesson)}>Lesson {++index}</li>
+                                                                <li className={`sub-topic-item ${currentSubTopic === lesson ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, lesson)}>Lesson {++index}</li>
                                                             ))}
                                                         </>
                                                     )}
@@ -252,7 +254,7 @@ export default function Units() {
                                     ))
                                 ) : null}
                             </div>
-                            <li className="topic-item" onClick={(e) => displayOverviewOrSummary(e, 'summary')}>Summary</li>
+                            <li className="topic-item summary" onClick={(e) => displayOverviewOrSummary(e, 'summary')}>Summary</li>
                         </ul>
                     </nav>
                 </aside>
@@ -264,7 +266,11 @@ export default function Units() {
                                 <>
                                     <li className="units-current-topic-holder">{currentTopic?.name}</li>
                                     <li className="units-right-nav-divider">/</li>
-                                    <li className="units-current-subtopic-holder">{currentSubTopicType}</li>
+                                    {currentSubTopicType === 'Lesson' ? (
+                                        <li className="units-current-subtopic-holder">{currentSubTopicType}: {currentSubTopic.name}</li>
+                                    ) : (
+                                        <li className="units-current-subtopic-holder">{currentSubTopicType}</li>
+                                    )}
                                 </>
                             ) : contentType === 'overview' ? (
                                 <li className="units-current-topic-holder">Overview</li>
@@ -292,5 +298,5 @@ export default function Units() {
                 </main>
             </div>
         </>
-    )
-}
+    );
+};
