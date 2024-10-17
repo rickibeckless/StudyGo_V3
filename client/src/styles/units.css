@@ -202,20 +202,19 @@
     color: #666666;
 }
 
-#next-sub-topic-btn {
-    font-size: .85rem;
+.nav-sub-topic-btn-holder {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
     margin-left: auto;
-    padding: 0.5rem 1rem;
-    background-color: #0073e6;
-    color: #ffffff;
-    border: none;
-    border-radius: 0.3rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    justify-content: flex-end;
+    gap: 0.5rem;
 }
 
-#next-sub-topic-btn:hover {
-    background-color: #005bb5;
+.nav-sub-topic-btn {
+    font-size: .85rem;
+    padding: 0.5rem 1rem;
 }
 
 #custom-right-nav-border {
@@ -303,6 +302,13 @@
 
 .unit-overview dt:hover {
     color: #0073e6;
+}
+
+/* subtopic styles */
+
+.note,
+.definition {
+    transition: all .2s;
 }
 
 /* NOTES STYLES */

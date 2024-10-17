@@ -70,6 +70,79 @@ export default function Units() {
         setCurrentTopic(null);
     };
 
+    const goToLastSubTopic = () => {
+        if (!currentTopic) {
+            if (contentType === 'overview') {
+                setDisplaySubTopicContent(false);
+                setContentType('summary');
+            } else if (contentType === 'summary') {
+                if (topics.length > 0) {
+                    const lastTopic = topics[topics.length - 1];
+                    setCurrentTopic(lastTopic);
+    
+                    const lastSubTopic = lastTopic.lessons?.length ? lastTopic.lessons[lastTopic.lessons.length - 1] : lastTopic.terms_defs?.length ? 'terms_defs' : lastTopic.notes?.length ? 'notes' : null;
+    
+                    if (lastSubTopic) {
+                        setCurrentSubTopic(lastSubTopic);
+                        setCurrentSubTopicType(lastTopic.lessons?.length ? 'Lesson' : lastTopic.terms_defs?.length ? 'Terms/Definitions' : 'Notes');
+                    }
+    
+                    setDisplaySubTopicContent(true);
+                } else {
+                    setDisplaySubTopicContent(false);
+                    setContentType('overview');
+                }
+            }
+        } else {
+            const flatSubTopics = [
+                ...(currentTopic.notes?.length ? ['notes'] : []),
+                ...(currentTopic.terms_defs?.length ? ['terms_defs'] : []),
+                ...currentTopic.lessons
+            ];
+    
+            const currentIndex = flatSubTopics.findIndex(subTopic => subTopic === currentSubTopic);
+    
+            if (currentIndex > 0) {
+                const lastSubTopic = flatSubTopics[currentIndex - 1];
+                setCurrentSubTopic(lastSubTopic);
+                setCurrentSubTopicType(
+                    lastSubTopic === 'notes'
+                        ? 'Notes'
+                        : lastSubTopic === 'terms_defs'
+                        ? 'Terms/Definitions'
+                        : 'Lesson'
+                );
+                setDisplaySubTopicContent(true);
+            } else {
+                const currentTopicIndex = topics.findIndex(topic => topic.unique_string_id === currentTopic.unique_string_id);
+                const lastTopic = topics[currentTopicIndex - 1];
+    
+                if (lastTopic) {
+                    setCurrentTopic(lastTopic);
+    
+                    const lastSubTopic = lastTopic.lessons?.length ? lastTopic.lessons[lastTopic.lessons.length - 1] : lastTopic.terms_defs?.length ? 'terms_defs' : lastTopic.notes?.length ? 'notes' : null;
+    
+                    if (lastSubTopic) {
+                        setCurrentSubTopic(lastSubTopic);
+                        setCurrentSubTopicType(
+                            lastTopic.lessons?.length
+                                ? 'Lesson'
+                                : lastTopic.terms_defs?.length
+                                ? 'Terms/Definitions'
+                                : 'Notes'
+                        );
+                    }
+    
+                    setDisplaySubTopicContent(true);
+                } else {
+                    setDisplaySubTopicContent(false);
+                    setContentType('overview');
+                    setCurrentTopic(null);
+                };
+            };
+        };
+    };
+
     const goToNextSubTopic = () => {
         if (!currentTopic) {
             if (contentType === 'overview') {
@@ -210,8 +283,10 @@ export default function Units() {
             {loading ? <LoadingScreen /> : null}
             {message && <MessagePopup message={message} setMessage={setMessage} />}
             <PageTitle title={`${unit.name} | StudyGo`} />
+
             <div className="units-container">
                 <UnitsHeader subject={subject} cls={cls} unit={unit} />
+
                 <aside id="units-left-nav">
                     <div id="units-left-nav-search">
                         <input type="text" id="units-left-nav-search-input" placeholder="Search topics..." />
@@ -267,7 +342,7 @@ export default function Units() {
                                     <li className="units-current-topic-holder">{currentTopic?.name}</li>
                                     <li className="units-right-nav-divider">/</li>
                                     {currentSubTopicType === 'Lesson' ? (
-                                        <li className="units-current-subtopic-holder">{currentSubTopicType}: {currentSubTopic.name}</li>
+                                        <li className="units-current-subtopic-holder">{currentSubTopic.name}</li>
                                     ) : (
                                         <li className="units-current-subtopic-holder">{currentSubTopicType}</li>
                                     )}
@@ -279,7 +354,10 @@ export default function Units() {
                             ) : null
                             }
 
-                            <button type="button" id="next-sub-topic-btn" onClick={() => goToNextSubTopic()}>Next</button>
+                            <li className="nav-sub-topic-btn-holder">
+                                <button type="button" className="nav-sub-topic-btn" onClick={() => goToLastSubTopic()}>Back</button>
+                                <button type="button" className="nav-sub-topic-btn" onClick={() => goToNextSubTopic()}>Next</button>
+                            </li>
                         </ul>
                         <div id="custom-right-nav-border"></div>
                     </nav>
