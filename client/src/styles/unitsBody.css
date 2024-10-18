@@ -1,0 +1,110 @@
+/* Sub-Topic Styles */
+.sub-topic-btn {
+    width: 1.3rem;
+    height: 1.8rem;
+}
+
+.delete-sub-topic-btn {
+    background-color: #ff0000;
+}
+
+.delete-sub-topic-btn:hover {
+    background-color: #d82525;
+}
+
+input.add-sub-topic-input {
+    margin-bottom: 0;
+    padding: 0.5rem;
+    color: #555555;
+}
+
+/* Notes Styles */
+.note-holder {
+    position: relative;
+}
+
+.note-star-btn {
+    position: absolute;
+    top: calc(50% - 0.7rem);
+    left: .5rem;
+    width: 1.3rem;
+}
+
+.note-btn-holder {
+    position: absolute;
+    top: 0;
+    right: .5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: 100%;
+}
+
+.add-note-input {
+
+}
+
+.add-note-btn {
+    margin-left: auto;
+    position: absolute;
+    top: calc(50% - 0.9rem);
+    right: .5rem;
+}
+
+/* Term-Def Styles */
+
+.termdef-holder {
+    position: relative;
+}
+
+.term-def-btn-holder {
+    margin-left: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.term-def-btn {
+
+}
+
+#delete-term-def-btn {
+    position: absolute;
+    top: -0.3rem;
+    left: -.3rem;
+    transform: rotate(-15deg);
+}
+
+#delete-def-btn {
+
+}
+
+.definition-holder .definition:last-of-type {
+    margin-bottom: 0;
+}
+
+#add-def-btn {
+    /* position: absolute;
+    bottom: -0.3rem;
+    right: -0.3rem;
+    transform: rotate(15deg); */
+}
+
+#add-term-btn {
+
+}
+
+.star-btn {
+    margin-right: 0.5rem;
+    height: 1.4rem;
+    font-size: .9rem;
+}
+
+.star-btn.starred {
+    color: #ffcc00;
+}
+
+/* Lesson Styles */
+

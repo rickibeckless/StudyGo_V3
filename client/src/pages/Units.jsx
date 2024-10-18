@@ -213,7 +213,18 @@ export default function Units() {
                 };
             };
         };
-    };    
+    };
+
+    const refreshTopic = async () => {
+        try {
+            const updatedTopics = await fetchWithRetry(`/api/topics/${subjectId}/${classId}/${unitId}`);
+            const updatedTopic = updatedTopics.find(topic => topic.unique_string_id === currentTopic?.unique_string_id);
+            setTopics(updatedTopics);
+            setCurrentTopic(updatedTopic);
+        } catch (error) {
+            console.error("Error refreshing topic:", error);
+        }
+    };
 
     useEffect(() => {
         async function fetchSubject() {
@@ -365,7 +376,7 @@ export default function Units() {
                     <div className="units-main-body-container">
                         <section id="units-right-content">
                             {displaySubTopicContent ? (
-                                <UnitsBodyContent topic={currentTopic} currentSubTopic={currentSubTopic} subTopics={allCurrentSubTopics} />  
+                                <UnitsBodyContent refreshTopic={refreshTopic} topic={currentTopic} currentSubTopic={currentSubTopic} subTopics={allCurrentSubTopics} />  
                             ) : (
                                 <OverviewOrSummary contentType={contentType} unit={unit} />
                             )}

@@ -326,6 +326,7 @@
     color: #333333;
     list-style-type: none;
     line-height: 1.6;
+    margin: 0 1rem;
 }
 
 .note:hover {
@@ -369,12 +370,6 @@
     color: #555555;
     line-height: 1.6;
     margin-bottom: 1rem;
-}
-
-.definition-holder .definition .definition-bullet {
-    font-size: 1.2rem;
-    color: #0073e6;
-    margin-right: 0.5rem;
 }
 
 .definition-holder .definition:hover {
