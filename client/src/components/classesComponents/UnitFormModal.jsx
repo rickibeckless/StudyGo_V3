@@ -38,6 +38,7 @@ export default function UnitFormModal({ subjectId, classId, classes, toggleUnitF
                     <textarea className="modal-input" id="modalLearningObjectivesInput" name="learningObjectives" placeholder="Learning Objectives (one per line)" rows="4"></textarea>
                     <textarea className="modal-input" id="modalUnitOutcomesInput" name="unitOutcomes" placeholder="Unit Outcomes" rows="4"></textarea>
                     <textarea className="modal-input" id="modalPrerequisitesInput" name="prerequisites" placeholder="Prerequisites" rows="4"></textarea>
+                    <input type="number" min="1" className="modal-input" id="modalIdexInput" name="index" placeholder="Index" />
 
                     <div id="class-form-btn-holder">
                         <button id="modalCloseButton" type="button" onClick={(e) => toggleUnitFormModal(e, subjectId, classId)}>Close</button>

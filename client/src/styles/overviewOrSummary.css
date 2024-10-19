@@ -1,0 +1,21 @@
+.summary-holder {
+    position: relative;
+}
+
+.summary-status-holder {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.summary-status-btn {
+    width: 2rem;
+    font-size: 1.5rem;
+}

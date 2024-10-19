@@ -1,12 +1,16 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import PageTitle from "../PageTitle.jsx";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleHalfStroke, faCircle, faCircleCheck, faCircleExclamation} from '@fortawesome/free-solid-svg-icons';
 import LoadingScreen from "../LoadingScreen.jsx";
 import MessagePopup from "../MessagePopup.jsx";
+import UnitStatusModal from "./UnitStatusModal.jsx";
+import '../../styles/overviewOrSummary.css';
 
-export default function OverviewOrSummary({ contentType, unit }) {
+export default function OverviewOrSummary({ refreshUnit, contentType, unit }) {
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
+    const [unitStatusModalOpen, setUnitStatusModalOpen] = useState(false);
 
     const navigate = useNavigate();
 
@@ -15,6 +19,11 @@ export default function OverviewOrSummary({ contentType, unit }) {
             setLoading(false);
         }
     }, [loading, unit]);
+
+    const toggleUnitStatusModal = () => {
+        setUnitStatusModalOpen(!unitStatusModalOpen);
+        document.body.classList.toggle("modal-open");
+    };
 
     return (
         <>
@@ -40,13 +49,43 @@ export default function OverviewOrSummary({ contentType, unit }) {
                 </dl>
             ) : contentType === 'summary' ? (
                 <div className="summary-holder">
-                    <h2 className="summary-title">Summary</h2>
+                    <div className="summary-status-holder">
+                        <h3>Unit Status:</h3>
+                        {unit.status === 'not started' ? (
+                            <>
+                                <button type="button" className="summary-status-btn" title="Unit Not Started" onClick={() => toggleUnitStatusModal()}>
+                                    <FontAwesomeIcon icon={faCircle} className="status-icon" />
+                                </button>
+                            </>
+                        ) : (unit.status === "in progress" || unit.status === "'in progress'")  ? (
+                            <>
+                                <button type="button" className="summary-status-btn" title="Unit In Progress" onClick={() => toggleUnitStatusModal()}>
+                                    <FontAwesomeIcon icon={faCircleHalfStroke} className="status-icon" />
+                                </button>
+                            </>
+                        ) : unit.status === 'completed' ? (
+                            <>
+                                <button type="button" className="summary-status-btn" title="Unit Completed" onClick={() => toggleUnitStatusModal()}>
+                                    <FontAwesomeIcon icon={faCircleCheck} className="status-icon" />
+                                </button>
+                            </>
+                        ) : unit.status === 'completed-redo' ? (
+                            <>
+                                <button type="button" className="summary-status-btn" title="Unit Completed - To Redo" onClick={() => toggleUnitStatusModal()}>
+                                    <FontAwesomeIcon icon={faCircleExclamation} className="status-icon" />
+                                </button>
+                            </>
+                        ) : null}
+                    </div>
+
+                    {/* <h2 className="summary-title">Summary</h2>
                     <p className="summary-description">This is the summary of the unit</p>
                     <div className="summary-content">
                         <p>Summary content goes here</p>
-                    </div>
+                    </div> */}
                 </div>
             ) : null}
+            {unitStatusModalOpen && <UnitStatusModal refreshUnit={refreshUnit} unit={unit} toggleUnitStatusModal={toggleUnitStatusModal} />}
         </>
     );
 };

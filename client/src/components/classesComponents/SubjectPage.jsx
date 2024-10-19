@@ -18,8 +18,7 @@ export default function SubjectPage({ subjectId }) {
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
 
-    const toggleUnitFormModal = (e, subjectId, classId) => {
-        e.stopPropagation();
+    const toggleUnitFormModal = (subjectId, classId) => {
         setOpenUnitFormModal(!openUnitFormModal);
         setUnitFormModalIds({ subjectId, classId });
     };
@@ -136,7 +135,7 @@ export default function SubjectPage({ subjectId }) {
                                         ) : (
                                             <LoadingScreen />
                                         )}
-                                        <button className="add-class-button" title="Add a unit" onClick={(e) => toggleUnitFormModal(e, subjectId, cls.unique_string_id)}>+</button>
+                                        <button className="add-class-button" title="Add a unit" onClick={() => toggleUnitFormModal(subjectId, cls.unique_string_id)}>+</button>
                                     </div>
                                 </div>
                             ) : (

@@ -115,6 +115,12 @@
     background-color: #e6f7ff;
 }
 
+.topic-item.current-topic-item {
+    background-color: #f0f0f0;
+    font-weight: 700;
+    color: #0073e6;
+}
+
 .sub-topic-item {
     cursor: pointer;
     border-bottom: 1px solid #a7a7a7;

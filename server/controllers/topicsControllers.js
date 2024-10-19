@@ -44,7 +44,7 @@ export const addTopic = async (req, res) => {
     } catch (error) {
         console.error('Error adding topic:', error);
         res.status(500).json({ message: 'Error adding topic', error });
-    }
+    };
 };
 
 {/* Sub-Topic Controllers */}
@@ -54,6 +54,8 @@ export const addNoteToTopic = async (req, res) => {
     try {
         const { topicId } = req.params;
         const { note } = req.body;
+
+        console.log(topicId, note);
 
         const results = await pool.query(
             'UPDATE topics SET notes = notes || $1::jsonb WHERE unique_string_id = $2 RETURNING *',
@@ -70,26 +72,65 @@ export const addNoteToTopic = async (req, res) => {
 export const updateNoteFromTopic = async (req, res) => {
     try {
         const { topicId } = req.params;
-        const { note } = req.body;
+        const { oldNote, newNote } = req.body;
 
-        const query = `
+        const fetchQuery = `SELECT notes FROM topics WHERE unique_string_id = $1`;
+        const fetchResult = await pool.query(fetchQuery, [topicId]);
+
+        if (fetchResult.rowCount === 0) {
+            return res.status(404).json({ message: 'Topic not found' });
+        }
+
+        const notes = fetchResult.rows[0].notes;
+
+        const updatedNotes = notes.map((note) =>
+            note.text === oldNote.text ? newNote : note
+        );
+
+        const updateQuery = `
             UPDATE topics 
-            SET notes = array_remove(notes, $1) 
+            SET notes = $1 
             WHERE unique_string_id = $2
             RETURNING *;
         `;
+        const updateResult = await pool.query(updateQuery, [JSON.stringify(updatedNotes), topicId]);
 
-        const results = await pool.query(query, [note, topicId]);
-
-        if (results.rowCount === 0) {
-            return res.status(404).json({ message: 'Topic or note not found' });
-        }
-
-        res.status(200).json(results.rows);
+        res.status(200).json(updateResult.rows);
     } catch (error) {
         console.error('Error updating note from topic:', error);
         res.status(500).json({ message: 'Error updating note from topic', error });
-    }
+    };
+};
+
+export const starNoteFromTopic = async (req, res) => {
+    try {
+        const { topicId } = req.params;
+        const { note } = req.body;
+
+        const fetchQuery = `SELECT notes FROM topics WHERE unique_string_id = $1`;
+        const fetchResult = await pool.query(fetchQuery, [topicId]);
+
+        if (fetchResult.rowCount === 0) {
+            return res.status(404).json({ message: 'Topic not found' });
+        };
+
+        const notes = fetchResult.rows[0].notes;
+        const updatedNotes = notes.map((n) =>
+            n.text === note.text ? { ...n, starred: !n.starred } : n
+        );
+        const updateQuery = `
+            UPDATE topics
+            SET notes = $1
+            WHERE unique_string_id = $2
+            RETURNING *;
+        `;
+        const updateResult = await pool.query(updateQuery, [JSON.stringify(updatedNotes), topicId]);
+
+        res.status(200).json(updateResult.rows);
+    } catch (error) {
+        console.error('Error starring note from topic:', error);
+        res.status(500).json({ message: 'Error starring note from topic', error });
+    };
 };
 
 export const deleteNoteFromTopic = async (req, res) => {
@@ -97,24 +138,32 @@ export const deleteNoteFromTopic = async (req, res) => {
         const { topicId } = req.params;
         const { note } = req.body;
 
-        const query = `
+        const fetchQuery = `SELECT notes FROM topics WHERE unique_string_id = $1`;
+        const fetchResult = await pool.query(fetchQuery, [topicId]);
+
+        if (fetchResult.rowCount === 0) {
+            return res.status(404).json({ message: 'Topic not found' });
+        };
+
+        const notes = fetchResult.rows[0].notes;
+        const updatedNotes = notes.filter(n => n.text !== note.text);
+        const updateQuery = `
             UPDATE topics
-            SET notes = array_remove(notes, $1)
+            SET notes = $1
             WHERE unique_string_id = $2
             RETURNING *;
         `;
+        const updateResult = await pool.query(updateQuery, [JSON.stringify(updatedNotes), topicId]);
 
-        const results = await pool.query(query, [note, topicId]);
-
-        if (results.rowCount === 0) {
+        if (updateResult.rowCount === 0) {
             return res.status(404).json({ message: 'Topic or note not found' });
-        }
+        };
 
-        res.status(200).json(results.rows);
+        res.status(200).json(updateResult.rows);
     } catch (error) {
         console.error('Error deleting note from topic:', error);
         res.status(500).json({ message: 'Error deleting note from topic', error });
-    }
+    };
 };
 
 // Term/Definition Controllers

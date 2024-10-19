@@ -5,6 +5,7 @@ import {
     addTopic, 
     addNoteToTopic,
     updateNoteFromTopic,
+    starNoteFromTopic,
     deleteNoteFromTopic,
     addTermDefToTopic,
     updateTermDefFromTopic,
@@ -25,6 +26,7 @@ router.post('/:subjectId/:classId/:unitId/new', addTopic);
 // note routes
 router.patch('/:subjectId/:classId/:unitId/:topicId/new/note', addNoteToTopic);
 router.patch('/:subjectId/:classId/:unitId/:topicId/update/note', updateNoteFromTopic);
+router.patch('/:subjectId/:classId/:unitId/:topicId/star/note', starNoteFromTopic);
 router.delete('/:subjectId/:classId/:unitId/:topicId/delete/note', deleteNoteFromTopic);
 
 // termdef routes

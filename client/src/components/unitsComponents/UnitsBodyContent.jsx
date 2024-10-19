@@ -2,57 +2,162 @@ import { useEffect, useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import DOMPurify from 'dompurify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashCan, faStar, faPenToSquare, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTrashCan, faStar, faPenToSquare, faPlus, faBan } from '@fortawesome/free-solid-svg-icons';
 import LoadingScreen from "../LoadingScreen.jsx";
 import MessagePopup from "../MessagePopup.jsx";
 import '../../styles/unitsBody.css';
 
 export default function UnitsBodyContent({ topic, currentSubTopic, subTopics, refreshTopic }) {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
 
-    const navigate = useNavigate();
+    const [editCurrentNote, setEditCurrentNote] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [noteToEdit, setNoteToEdit] = useState(null);
+    const [noteForm, setNoteForm] = useState({
+        text: '',
+        starred: false
+    });
+    const [editNoteForm, setEditNoteForm] = useState({
+        text: '',
+        starred: false
+    });
 
     useEffect(() => {
         setLoading(false);
     }, []);
 
-    const [noteForm, setNoteForm] = useState({
-        content: ''
-    });
-
-    const handleNoteChange = (e) => {
-        const { name, value } = e.target;
-        setNoteForm((prevData) => ({
-            ...prevData,
-            [name]: value
-        }));
-    };
-
-    const addNewNote = async (e) => {
-        e.preventDefault();
-
-        console.log(noteForm.content);
-
-        try { // /api/topics/:subjectId/:classId/:unitId/:topicId/new/note
-            const res = await fetch(`/api/topics/${topic.subjectid}/${topic.classid}/${topic.unitid}/${topic.unique_string_id}/new/note`, {
+    const handleStarClick = async (note) => {
+        try {
+            const res = await fetch(`/api/topics/${topic.subjectid}/${topic.classid}/${topic.unitid}/${topic.unique_string_id}/star/note`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ note: [noteForm.content] })
+                body: JSON.stringify({ note })
             });
 
             const data = await res.json();
 
             if (res.ok) {
                 refreshTopic();
-                setMessage("Note added successfully");
+                setMessage(data.message);
+            } else {
+                setMessage(data.message);
+            }
+        } catch (error) {
+            setMessage(error.message);
+        };
+    };
+
+    const toggleEditEvent = (e) => {
+        e.preventDefault();
+        setEditCurrentNote(!editCurrentNote);
+    };
+
+    const handleEditClick = (note) => {
+        setIsEditing(true);
+        setNoteToEdit(note);
+        setEditNoteForm({
+            text: note.text,
+            starred: note.starred
+        });
+        setEditCurrentNote(!editCurrentNote);
+    };
+
+    const handleDeleteClick = async (note) => {
+        try {
+            const res = await fetch(`/api/topics/${topic.subjectid}/${topic.classid}/${topic.unitid}/${topic.unique_string_id}/delete/note`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ note })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                refreshTopic();
+                setMessage(data.message);
+            } else {
+                setMessage(data.message);
+            }
+        } catch (error) {
+            setMessage(error.message);
+        };
+    };
+
+    const handleNoteChange = (e, type) => {
+        const { name, value } = e.target;
+
+        if (type === 'edit') {
+            setEditNoteForm((prevData) => ({
+                ...prevData,
+                [name]: value
+            }));
+        } else if (type === 'add') {
+            setNoteForm((prevData) => ({
+                ...prevData,
+                [name]: value
+            }));
+        };
+    };
+
+    const addNewNote = async (e) => {
+        e.preventDefault();
+
+        if (isEditing && !noteToEdit.text) {
+            setMessage("Note cannot be empty");
+            return;
+        };
+
+        if (!isEditing && !noteForm.text) {
+            setMessage("Note cannot be empty");
+            return;
+        };
+    
+        try {
+            let url = '';
+            let method = '';
+            let body = {};
+    
+            if (isEditing) {
+                url = `/api/topics/${topic.subjectid}/${topic.classid}/${topic.unitid}/${topic.unique_string_id}/update/note`;
+                method = 'PATCH';
+                body = {
+                    oldNote: noteToEdit,
+                    newNote: editNoteForm
+                };
+            } else {
+                url = `/api/topics/${topic.subjectid}/${topic.classid}/${topic.unitid}/${topic.unique_string_id}/new/note`;
+                method = 'PATCH';
+                body = { note: noteForm };
+            }
+    
+            const res = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body),
+            });
+    
+            const data = await res.json();
+    
+            if (res.ok) {
+                refreshTopic();
+                setMessage(isEditing ? "Note updated successfully" : "Note added successfully");
             } else {
                 setMessage(data.message);
             }
 
-            setNoteForm({ content: '' });
+            setNoteForm({ text: '', starred: false });
+            setEditNoteForm({ text: '', starred: false });
+            setIsEditing(false);
+            setEditCurrentNote(false);
+            setNoteToEdit(null);
         } catch (error) {
             setMessage(error.message);
         };
@@ -68,27 +173,55 @@ export default function UnitsBodyContent({ topic, currentSubTopic, subTopics, re
                 <>
                     {topic?.notes?.map((note, index) => (
                         <ul className="note-holder">
-                            <button className="sub-topic-btn star-btn note-star-btn" type="button">
+                            <button className={`sub-topic-btn star-btn note-star-btn ${note.starred === true ? 'starred' : ''}`} type="button" onClick={() => handleStarClick(note)}>
                                 <FontAwesomeIcon icon={faStar} />
                             </button>
 
-                            <li key={index} className="note">{note}</li>
+                            {editCurrentNote ? (
+                                noteToEdit === note ? (
+                                    <span className="edit-note-holder">
+                                        <li className="note">
+                                            <input type="text" className="add-sub-topic-input add-note-input" placeholder="edit note..." name="text" value={editNoteForm.text || ''} onChange={(e) => handleNoteChange(e, 'edit')} />
+                                        </li>
+                                        
+                                        <span className="note-btn-holder">
+                                            <button className="sub-topic-btn delete-sub-topic-btn" type="button" onClick={(e) => toggleEditEvent(e)}>
+                                                <FontAwesomeIcon icon={faBan} />
+                                            </button>
+                                            <button className="sub-topic-btn edit-sub-topic-btn" type="button" onClick={(e) => addNewNote(e)}>
+                                                <FontAwesomeIcon icon={faPlus} />
+                                            </button>
+                                        </span>
+                                    </span>
+                                ) : (
+                                    <li key={index} className="note">{note.text}</li>
+                                )
+                            ) : (
+                                <>
+                                    <li key={index} className="note">{note.text}</li>
+                                
+                                    <span className="note-btn-holder">
+                                        <button className="sub-topic-btn edit-sub-topic-btn" type="button" onClick={() => handleEditClick(note)}>
+                                            <FontAwesomeIcon icon={faPenToSquare} />
+                                        </button>
 
-                            <span className="note-btn-holder">
-                                <button className="sub-topic-btn edit-sub-topic-btn" type="button">
-                                    <FontAwesomeIcon icon={faPenToSquare} />
-                                </button>
-
-                                <button className="sub-topic-btn delete-sub-topic-btn" type="button">
-                                    <FontAwesomeIcon icon={faTrashCan} />
-                                </button>
-                            </span>
+                                        <button className="sub-topic-btn delete-sub-topic-btn" type="button" onClick={() => handleDeleteClick(note)}>
+                                            <FontAwesomeIcon icon={faTrashCan} />
+                                        </button>
+                                    </span>
+                                </>
+                            )}
                         </ul>
                     ))}
 
                     <ul className="note-holder">
                         <li className="note">
-                            <input type="text" className="add-sub-topic-input add-note-input" placeholder="new note..." name="content" value={noteForm.content} onChange={handleNoteChange} />
+                            {editCurrentNote ? (
+                                <input type="text" className="add-sub-topic-input add-note-input" placeholder="new note..." />
+
+                            ) : (
+                                <input type="text" className="add-sub-topic-input add-note-input" placeholder="new note..." name="text" value={noteForm.text} onChange={(e) => handleNoteChange(e, 'add')} />
+                            )}
                         </li>
                         <button className="sub-topic-btn add-sub-topic-btn add-note-btn" type="button" onClick={(e) => addNewNote(e)}>
                             <FontAwesomeIcon icon={faPlus} />

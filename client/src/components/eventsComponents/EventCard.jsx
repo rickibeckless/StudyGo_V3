@@ -40,6 +40,7 @@ export default function EventCard({ event, cardKey, currentEvent, evenOrOdd }) {
 
     const formattedDays = String(timeUntilEventDays).padStart(2, '0');
     const formattedHours = String(leftoverHours).padStart(2, '0');
+    const formattedMinutes = String(leftoverMinutes).padStart(2, '0');
 
     const splicedDescription = event.event_description.length > 40 ? `${event.event_description.slice(0, 40)}...` : event.event_description;
 
@@ -64,7 +65,7 @@ export default function EventCard({ event, cardKey, currentEvent, evenOrOdd }) {
                                 
                                 <h4 className="event-info-time-title">Time Until Event:</h4>
                                 {timeUntilEventDays > 0 || leftoverHours > 0 || leftoverMinutes > 0 ?
-                                    <p className="event-info-remaining">{formattedDays} days, {formattedHours} hours, {leftoverMinutes} minutes</p>
+                                    <p className="event-info-remaining">{formattedDays} days, {formattedHours} hours, {formattedMinutes} minutes</p>
                                 : <p className="event-info-remaining">Event is happening now!</p>
                                 }
                             </div>

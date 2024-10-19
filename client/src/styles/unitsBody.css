@@ -18,6 +18,16 @@ input.add-sub-topic-input {
     color: #555555;
 }
 
+.star-btn {
+    margin-right: 0.5rem;
+    height: 1.4rem;
+    font-size: .9rem;
+}
+
+.star-btn.starred {
+    color: #ffcc00;
+}
+
 /* Notes Styles */
 .note-holder {
     position: relative;
@@ -94,16 +104,6 @@ input.add-sub-topic-input {
 
 #add-term-btn {
 
-}
-
-.star-btn {
-    margin-right: 0.5rem;
-    height: 1.4rem;
-    font-size: .9rem;
-}
-
-.star-btn.starred {
-    color: #ffcc00;
 }
 
 /* Lesson Styles */

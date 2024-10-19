@@ -1,0 +1,60 @@
+#unit-status-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 2001;
+
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px #00000026;
+
+    padding: 1rem;
+    width: 20vw;
+    height: 48dvh;
+
+    overflow: scroll;
+}
+
+#unit-status-modal .modal-content {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    height: 100%;
+}
+
+#unit-status-modal h2 {
+    text-align: center;
+}
+
+#unit-status-modal .status-holder {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: .2rem .5rem
+}
+
+#unit-status-modal .status-holder.selected {
+    background-color: #e6f7ff;
+}
+
+#unit-status-modal .status-holder .status-btn {
+    width: 2rem;
+    font-size: 1.5rem;
+    background-color: #ffffff;
+    color: #0073e6;
+}
+
+#unit-status-modal .status-holder.selected .status-btn {
+    background-color: #0073e6;
+    color: #ffffff;
+}

@@ -25,19 +25,19 @@ export const getUnitsByClassId = async (req, res) => {
 export const addUnit = async (req, res) => {
     try {
         const { subjectId, classId } = req.params;
-        const { name, description, learningObjectives, unitOutcomes, prerequisites } = req.body;
+        const { name, description, learningObjectives, unitOutcomes, prerequisites, index } = req.body;
 
-        const newUniqueId = generateUniqueStringId();
+        // const newUniqueId = generateUniqueStringId();
 
-        const existingUniqueIds = await getAllUniqueIds();
+        // const existingUniqueIds = await getAllUniqueIds();
 
-        if (existingUniqueIds.includes(newUniqueId)) {
-            return res.status(400).json({ message: 'The unique_string_id already exists.' });
-        };
+        // if (existingUniqueIds.includes(newUniqueId)) {
+        //     return res.status(400).json({ message: 'The unique_string_id already exists.' });
+        // };
 
         const results = await pool.query(
-            'INSERT INTO units (subjectid, classid, name, description, learning_objectives, unit_outcomes, prerequisites) VALUES ($1, $2, $3, $4, $5::text[], $6, $7) RETURNING *', 
-            [subjectId, classId, name, description, learningObjectives, unitOutcomes, prerequisites]
+            'INSERT INTO units (subjectid, classid, name, description, learning_objectives, unit_outcomes, prerequisites, unit_index) VALUES ($1, $2, $3, $4, $5::text[], $6, $7, $8) RETURNING *', 
+            [subjectId, classId, name, description, learningObjectives, unitOutcomes, prerequisites, index]
         );
 
         res.status(201).json(results.rows);
@@ -59,6 +59,17 @@ export const getUnitById = async (req, res) => {
     } catch (error) {
         console.error('Error fetching unit by ID:', error);
         res.status(500).json({ message: 'Error fetching unit by ID', error });
+    };
+};
+
+export const updateUnitStatus = async (req, res) => {
+    try {
+        const results = await pool.query('UPDATE units SET status = $1 WHERE unique_string_id = $2 RETURNING *', [req.body.status, req.params.unitId]);
+
+        res.status(200).json(results.rows);
+    } catch (error) {
+        console.error('Error updating unit status:', error);
+        res.status(500).json({ message: 'Error updating unit status', error });
     };
 };
 

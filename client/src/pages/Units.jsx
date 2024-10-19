@@ -67,11 +67,11 @@ export default function Units() {
         e.stopPropagation();
         setDisplaySubTopicContent(false);
         setContentType(type);
-        setCurrentTopic(null);
+        setCurrentTopic(type);
     };
 
     const goToLastSubTopic = () => {
-        if (!currentTopic) {
+        if (currentTopic === 'overview' || currentTopic === 'summary') {
             if (contentType === 'overview') {
                 setDisplaySubTopicContent(false);
                 setContentType('summary');
@@ -94,24 +94,28 @@ export default function Units() {
                 }
             }
         } else {
-            const flatSubTopics = [
-                ...(currentTopic.notes?.length ? ['notes'] : []),
-                ...(currentTopic.terms_defs?.length ? ['terms_defs'] : []),
-                ...currentTopic.lessons
-            ];
+            let flatSubTopics = []
+
+            if (currentTopic !== 'overview' && currentTopic !== 'summary') {
+                flatSubTopics = [
+                    ...(currentTopic?.notes?.length ? ['notes'] : []),
+                    ...(currentTopic?.terms_defs?.length ? ['terms_defs'] : []),
+                    ...currentTopic?.lessons
+                ];
+            }
+
+            // const flatSubTopics = [
+            //     ...(currentTopic.notes?.length ? ['notes'] : []),
+            //     ...(currentTopic.terms_defs?.length ? ['terms_defs'] : []),
+            //     ...currentTopic.lessons
+            // ];
     
             const currentIndex = flatSubTopics.findIndex(subTopic => subTopic === currentSubTopic);
     
             if (currentIndex > 0) {
                 const lastSubTopic = flatSubTopics[currentIndex - 1];
                 setCurrentSubTopic(lastSubTopic);
-                setCurrentSubTopicType(
-                    lastSubTopic === 'notes'
-                        ? 'Notes'
-                        : lastSubTopic === 'terms_defs'
-                        ? 'Terms/Definitions'
-                        : 'Lesson'
-                );
+                setCurrentSubTopicType(lastSubTopic === 'notes' ? 'Notes' : lastSubTopic === 'terms_defs' ? 'Terms/Definitions' : 'Lesson');
                 setDisplaySubTopicContent(true);
             } else {
                 const currentTopicIndex = topics.findIndex(topic => topic.unique_string_id === currentTopic.unique_string_id);
@@ -124,27 +128,21 @@ export default function Units() {
     
                     if (lastSubTopic) {
                         setCurrentSubTopic(lastSubTopic);
-                        setCurrentSubTopicType(
-                            lastTopic.lessons?.length
-                                ? 'Lesson'
-                                : lastTopic.terms_defs?.length
-                                ? 'Terms/Definitions'
-                                : 'Notes'
-                        );
+                        setCurrentSubTopicType(lastTopic.lessons?.length ? 'Lesson' : lastTopic.terms_defs?.length ? 'Terms/Definitions' : 'Notes');
                     }
     
                     setDisplaySubTopicContent(true);
                 } else {
                     setDisplaySubTopicContent(false);
                     setContentType('overview');
-                    setCurrentTopic(null);
+                    setCurrentTopic('overview');
                 };
             };
         };
     };
 
     const goToNextSubTopic = () => {
-        if (!currentTopic) {
+        if (currentTopic === 'overview' || currentTopic === 'summary') {
             if (contentType === 'overview') {
                 if (topics.length > 0) {
                     setCurrentTopic(topics[0]);
@@ -175,11 +173,20 @@ export default function Units() {
                 };
             };
         } else {
-            const flatSubTopics = [
-                ...(currentTopic.notes?.length ? ['notes'] : []),
-                ...(currentTopic.terms_defs?.length ? ['terms_defs'] : []),
-                ...currentTopic.lessons
-            ];
+            let flatSubTopics = []
+
+            if (currentTopic !== 'overview' && currentTopic !== 'summary') {
+                flatSubTopics = [
+                    ...(currentTopic?.notes?.length ? ['notes'] : []),
+                    ...(currentTopic?.terms_defs?.length ? ['terms_defs'] : []),
+                    ...currentTopic?.lessons
+                ];
+            }
+            // const flatSubTopics = [
+            //     ...(currentTopic.notes?.length ? ['notes'] : []),
+            //     ...(currentTopic.terms_defs?.length ? ['terms_defs'] : []),
+            //     ...currentTopic.lessons
+            // ];
         
             const currentIndex = flatSubTopics.findIndex(subTopic => subTopic === currentSubTopic);
         
@@ -209,7 +216,7 @@ export default function Units() {
                 } else {
                     setDisplaySubTopicContent(false);
                     setContentType('summary');
-                    setCurrentTopic(null);
+                    setCurrentTopic('summary');
                 };
             };
         };
@@ -223,6 +230,15 @@ export default function Units() {
             setCurrentTopic(updatedTopic);
         } catch (error) {
             console.error("Error refreshing topic:", error);
+        }
+    };
+
+    const refreshUnit = async () => {
+        try {
+            const updatedUnit = await fetchWithRetry(`/api/units/${subjectId}/${classId}/${unitId}`);
+            setUnit(updatedUnit[0]);
+        } catch (error) {
+            console.error("Error refreshing unit:", error);
         }
     };
 
@@ -286,7 +302,7 @@ export default function Units() {
         fetchSubject();
         setDisplaySubTopicContent(false);
         setContentType('overview');
-        setCurrentTopic(null);
+        setCurrentTopic('overview');
     }, [loading, subjectId, classId, unitId]);
 
     return (
@@ -307,12 +323,12 @@ export default function Units() {
                     </div>
                     <nav id="units-left-nav-topics">
                         <ul id="units-left-nav-topics-list">
-                            <li className="topic-item" onClick={(e) => displayOverviewOrSummary(e, 'overview')}>Overview</li>
+                            <li className={`topic-item ${currentTopic === 'overview' ? 'current-topic-item' : ''}`} onClick={(e) => displayOverviewOrSummary(e, 'overview')}>Overview</li>
                             <div className="topic-item-holder">
                                 {topics.length > 0 ? (
                                     topics.map(topic => (
                                         <>
-                                            <li key={topic.id} className="topic-item" onClick={(e) => toggleSubtopicDropdown(e, topic)}>
+                                            <li key={topic.id} className={`topic-item ${currentTopic === topic ? 'current-topic-item' : ''}`} onClick={(e) => toggleSubtopicDropdown(e, topic)}>
                                                 {topic.name}
                                                 <span className="sub-topic-total-index">
                                                     {topic.lessons?.length + (topic.notes ? 1 : 0) + (topic.terms_defs ? 1 : 0)}
@@ -340,7 +356,7 @@ export default function Units() {
                                     ))
                                 ) : null}
                             </div>
-                            <li className="topic-item summary" onClick={(e) => displayOverviewOrSummary(e, 'summary')}>Summary</li>
+                            <li className={`topic-item summary ${currentTopic === 'summary' ? 'current-topic-item' : ''}`} onClick={(e) => displayOverviewOrSummary(e, 'summary')}>Summary</li>
                         </ul>
                     </nav>
                 </aside>
@@ -378,7 +394,7 @@ export default function Units() {
                             {displaySubTopicContent ? (
                                 <UnitsBodyContent refreshTopic={refreshTopic} topic={currentTopic} currentSubTopic={currentSubTopic} subTopics={allCurrentSubTopics} />  
                             ) : (
-                                <OverviewOrSummary contentType={contentType} unit={unit} />
+                                <OverviewOrSummary refreshUnit={refreshUnit} contentType={contentType} unit={unit} />
                             )}
                         </section>
 
