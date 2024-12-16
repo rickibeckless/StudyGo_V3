@@ -1,5 +1,8 @@
 import express from 'express';
-import { getSubjects, getSubjectsById } from '../controllers/subjectsControllers.js';
+import { 
+    getSubjects, 
+    getSubjectsById 
+} from '../controllers/subjectsControllers.js';
 
 const router = express.Router();
 

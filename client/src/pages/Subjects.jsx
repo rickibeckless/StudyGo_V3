@@ -38,6 +38,7 @@ export default function Subjects() {
 
     const toggleClassDropdown = async (e, subject) => {
         e.stopPropagation();
+
         setOpenClassDropdown(!openClassDropdown);
 
         const classesData = await fetchWithRetry(`/api/classes/${subject.unique_string_id}`);

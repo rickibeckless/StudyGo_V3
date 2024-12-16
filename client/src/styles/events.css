@@ -160,7 +160,7 @@ main#events-body #subjects-filter-holder {
     background-color: #ffffff;
     border-radius: 0.5rem;
     box-shadow: 0 0.2rem 0.5rem #0000001a;
-    overflow: scroll;
+    overflow: auto;
     cursor: pointer;
 }
 
@@ -192,7 +192,7 @@ main#events-body #subjects-filter-holder {
     height: 100%;
     text-align: center;
 
-    overflow: scroll;
+    overflow: auto;
 }
 
 .event-info-title {
@@ -265,3 +265,27 @@ main#events-body #new-event-button:hover {
     }
 }
 
+#no-events-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 2rem;
+    gap: 1rem;
+}
+
+#no-events-link-button {
+    color: #5c5c5c;
+    font-style: normal;
+    border: none;
+    background: none;
+    transition: color 0.2s;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 1.1rem;
+}
+
+#no-events-link-button:hover {
+    color: #0073e6;
+}

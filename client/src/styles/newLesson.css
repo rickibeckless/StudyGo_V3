@@ -1,0 +1,77 @@
+#add-lesson-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 95vw;
+    height: 95vh;
+    border: 0.1rem solid #dddddd;
+    border-radius: 1rem;
+    box-shadow: 3px 3px 5px #0000001a;
+    
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f4f4f4;
+    z-index: 2001;
+    overflow: auto;
+}
+
+#add-lesson-modal .modal-header {
+    text-align: center;
+    position: sticky;
+    top: 0;
+    background-color: #ffffff;
+    border-bottom: 1px solid #0073e6;
+    padding: 1rem;
+    z-index: 1;
+}
+
+#add-lesson-modal .modal-header .modal-close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: .2rem .5rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+#add-lesson-modal form {
+    padding: .7rem 2rem;
+}
+
+#add-lesson-modal .new-lesson-form-input-holder {
+    display: flex;
+    flex-direction: column;
+}
+
+#add-lesson-modal .new-lesson-form-input-holder.invalid-field .form-label::after {
+    content: "*";
+    color: #ff0000;
+}
+
+#add-lesson-modal .new-lesson-form-input-holder textarea {
+    min-height: 5rem;
+    max-height: 10rem;
+
+    resize: vertical;
+}
+
+#add-lesson-modal .new-lesson-form-input-holder #toolbar,
+#add-lesson-modal .new-lesson-form-input-holder .quill {
+    width: 100%;
+    background-color: #ffffff;
+}
+
+#add-lesson-modal .new-lesson-form-input-holder .quill,
+#add-lesson-modal .new-lesson-form-input-holder .ql-container,
+#add-lesson-modal .new-lesson-form-input-holder .ql-editor {
+    min-height: 20rem;
+}
+
+#add-lesson-modal #add-lesson-modal-submit-button {
+    margin-top: 2rem;
+    width: max-content;
+    margin-left: auto;
+    display: block;
+}

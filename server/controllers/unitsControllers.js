@@ -25,19 +25,13 @@ export const getUnitsByClassId = async (req, res) => {
 export const addUnit = async (req, res) => {
     try {
         const { subjectId, classId } = req.params;
-        const { name, description, learningObjectives, unitOutcomes, prerequisites, index } = req.body;
+        let { name, description, learning_objectives, unit_outcomes, prerequisites, unit_index } = req.body;
 
-        // const newUniqueId = generateUniqueStringId();
-
-        // const existingUniqueIds = await getAllUniqueIds();
-
-        // if (existingUniqueIds.includes(newUniqueId)) {
-        //     return res.status(400).json({ message: 'The unique_string_id already exists.' });
-        // };
+        learning_objectives = learning_objectives.split('\n').map((objective) => objective.trim());
 
         const results = await pool.query(
             'INSERT INTO units (subjectid, classid, name, description, learning_objectives, unit_outcomes, prerequisites, unit_index) VALUES ($1, $2, $3, $4, $5::text[], $6, $7, $8) RETURNING *', 
-            [subjectId, classId, name, description, learningObjectives, unitOutcomes, prerequisites, index]
+            [subjectId, classId, name, description, learning_objectives, unit_outcomes, prerequisites, unit_index]
         );
 
         res.status(201).json(results.rows);

@@ -1,5 +1,4 @@
 import { pool } from '../config/database.js';
-import { generateUniqueStringId, getAllUniqueIds, getAllIndexes } from '../data/allUniqueIds.js';
 
 export const getClasses = async (req, res) => {
     try {
@@ -30,14 +29,6 @@ export const addClass = async (req, res) => {
     try {
         const subjectId = req.params.subjectId;
         const { name, description, index } = req.body;
-        
-        // const newUniqueId = generateUniqueStringId();
-        
-        // const existingUniqueIds = await getAllUniqueIds();
-
-        // if (existingUniqueIds.includes(newUniqueId)) {
-        //     return res.status(400).json({ message: 'The unique_string_id already exists.' });
-        // }
 
         const currentTimestamp = new Date();
 

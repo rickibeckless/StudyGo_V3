@@ -1,5 +1,4 @@
 import { pool } from '../config/database.js';
-import { generateUniqueStringId, getAllUniqueIds } from '../data/allUniqueIds.js';
 
 export const getTopics = async (req, res) => {
     try {
@@ -11,10 +10,9 @@ export const getTopics = async (req, res) => {
     };
 };
 
-export const getTopicsById = async (req, res) => {
+export const getTopicsByUnitId = async (req, res) => {
     try {
         const results = await pool.query('SELECT * FROM topics WHERE unitid = $1', [req.params.unitId]);
-
         res.status(200).json(results.rows);
     } catch (error) {
         console.error('Error fetching topic by unit id:', error);
@@ -25,29 +23,38 @@ export const getTopicsById = async (req, res) => {
 export const addTopic = async (req, res) => {
     try {
         const { subjectId, classId, unitId } = req.params;
-        const { name, description, notes, termdefs, lessons } = req.body;
-
-        const newUniqueId = generateUniqueStringId();
-
-        const existingUniqueIds = await getAllUniqueIds();
-
-        if (existingUniqueIds.includes(newUniqueId)) {
-            return res.status(400).json({ message: 'The unique_string_id already exists.' });
-        };
+        const { name, description, topic_index } = req.body;
 
         const results = await pool.query(
-            'INSERT INTO topics (subjectid, classid, unitid, name, description, notes, terms_defs, lessons) VALUES ($1, $2, $3, $4, $5, $6::text[], $7::text[], $8::text[]) RETURNING *',
-            [subjectId, classId, unitId, name, description, notes, termdefs, lessons]
+            'INSERT INTO topics (subjectid, classid, unitid, name, description, topic_index) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [subjectId, classId, unitId, name, description, topic_index]
         );
 
-        res.status(201).json(results.rows);
+        res.status(200).json(results.rows);
     } catch (error) {
         console.error('Error adding topic:', error);
         res.status(500).json({ message: 'Error adding topic', error });
     };
 };
 
-{/* Sub-Topic Controllers */}
+export const deleteTopic = async (req, res) => {
+    try {
+        const { subjectId, classId, unitId } = req.params;
+
+        const results = await pool.query('DELETE FROM topics WHERE subjectid = $1 AND classid = $2 AND unitid = $3 RETURNING *', [subjectId, classId, unitId]);
+
+        if (results.rowCount === 0) {
+            return res.status(404).json({ message: 'Topic not found' });
+        }
+
+        res.status(200).json(results.rows);
+    } catch (error) {
+        console.error('Error deleting topic:', error);
+        res.status(500).json({ message: 'Error deleting topic', error });
+    };
+};
+
+/* Sub-Topic Controllers */
 
 // Note Controllers
 export const addNoteToTopic = async (req, res) => {
@@ -238,26 +245,10 @@ export const deleteTermDefFromTopic = async (req, res) => {
 export const addLessonToTopic = async (req, res) => {
     try {
         const { topicId } = req.params;
-        let { lesson } = req.body;
-
-        const newUniqueId = generateUniqueStringId();
-
-        const existingUniqueIds = await getAllUniqueIds();
-
-        if (existingUniqueIds.includes(newUniqueId)) {
-            return res.status(400).json({ message: 'The unique_string_id already exists.' });
-        }
-
-        // i need to edit this as generating a new unique id isn't necessary
-        // or maybe it still is for the lessons?
-
-        lesson = {
-            ...lesson,
-            unique_string_id: newUniqueId
-        };
+        const lesson = { ...req.body };
 
         const results = await pool.query(
-            'UPDATE topics SET lessons = lessons || $1::jsonb WHERE unique_string_id = $2 RETURNING *',
+            'UPDATE topics SET lessons = COALESCE(lessons, \'[]\'::jsonb) || $1::jsonb WHERE unique_string_id = $2 RETURNING *',
             [JSON.stringify(lesson), topicId]
         );
 
@@ -265,7 +256,7 @@ export const addLessonToTopic = async (req, res) => {
     } catch (error) {
         console.error('Error adding lesson to topic:', error);
         res.status(500).json({ message: 'Error adding lesson to topic', error });
-    }
+    };
 };
 
 export const updateLessonFromTopic = async (req, res) => {

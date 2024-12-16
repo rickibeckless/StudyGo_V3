@@ -10,13 +10,14 @@ export default function Classes() {
     const location = useLocation();
     const { subjectId: paramSubjectId } = useParams();
     const [subjectId, setSubjectId] = useState(paramSubjectId || null);
+    const [goToClassesPage, setGoToClassesPage] = useState(false);
 
     useEffect(() => {
         const currentPath = location.pathname;
         const pathSegments = currentPath.split('/').filter(Boolean);
 
         if (currentPath === '/classes') {
-            GeneralClassesPage();
+            setGoToClassesPage(true);
         } else if (pathSegments.length === 1) {
             const subject = pathSegments[0];
             setSubjectId(subject);

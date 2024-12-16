@@ -29,6 +29,27 @@ export default function Events() {
                 const data = await fetchWithRetry('/api/events');
                 //const data = await response.json();
 
+                if (!data) {
+                    setMessage(`
+                        <div id="no-events-message">
+                            <h3>No events yet!</h3>
+                            <p>Add some to get started! Here are some ideas for events you can host:</p>
+                            <ul>
+                                <li>Study sessions</li>
+                                <li>Group projects</li>
+                                <li>Homework help</li>
+                                <li>Test prep</li>
+                                <li>Guest speakers</li>
+                                <li>Workshops</li>
+                                <li>Networking events</li>
+                                <li>And more!</li>
+                            </ul>
+                        </div>
+                    `);
+                    setLoading(false);
+                    return;
+                };
+
                 const currentDate = new Date();
                 const currentEvents = data.filter(event => {
                     const eventDate = new Date(event.event_date_time);
@@ -48,7 +69,7 @@ export default function Events() {
     return (
         <main id="events-body" className="container">
             {loading ? <LoadingScreen /> : null}
-            {message ? <MessagePopup message={message} /> : null}
+            {message ? <MessagePopup message={message} setMessage={setMessage} styledMessage={true} /> : null}
             <PageTitle title="All Events | StudyGo" />
             
             {/* <aside id="subjects-filter-holder">
@@ -110,7 +131,7 @@ export default function Events() {
                     <ul id="event-list">
                         {events.length > 0 ? events.map((event, index) => {
                             return <EventCard key={`event-card-${index}`} event={event} cardKey={event.event_id} currentEvent={false} />;
-                        }) : <li id="default-li" key="event-default">Nothing yet! <a href="#">Add some events</a> to get started!</li>}
+                        }) : <li id="default-li" key="event-default">Nothing yet! <button type="button" id="no-events-link-button" onClick={() => toggleNewEventModal()}>Add some events</button> to get started!</li>}
                     </ul>
                 </section>
             </div>

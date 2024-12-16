@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PageTitle from "../PageTitle.jsx";
 import MessagePopup from "../MessagePopup.jsx";
 import LoadingScreen from "../LoadingScreen.jsx";

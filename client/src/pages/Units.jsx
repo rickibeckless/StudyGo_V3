@@ -16,6 +16,8 @@ export default function Units() {
     const { fetchWithRetry } = useContext(FetchContext);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
+    const [styledMessage, setStyledMessage] = useState(false);
+    const [confirmationAction, setConfirmationAction] = useState(null);
     const navigate = useNavigate();
 
     const { subjectId, classId, unitId } = useParams();
@@ -28,6 +30,7 @@ export default function Units() {
     const [subject, setSubject] = useState([]);
     const [cls, setClass] = useState([]);
     const [unit, setUnit] = useState([]);
+    const [previousUnit, setPreviousUnit] = useState([]);
     const [nextUnit, setNextUnit] = useState([]);
     const [topics, setTopics] = useState([]);
 
@@ -73,8 +76,27 @@ export default function Units() {
     const goToLastSubTopic = () => {
         if (currentTopic === 'overview' || currentTopic === 'summary') {
             if (contentType === 'overview') {
-                setDisplaySubTopicContent(false);
-                setContentType('summary');
+                if (previousUnit) {
+                    setStyledMessage(true);
+                    setConfirmationAction(() => () => confirmPreviousLesson());
+                    setMessage(`
+                        <h3>You've reached the beginning of this unit!</h3>
+                        <p>Do you want to go back?</p>
+                    `);
+
+                    function confirmPreviousLesson() {
+                        navigate(`/units/${previousUnit.subjectid}/${previousUnit.classid}/${previousUnit.unique_string_id}`);
+                    };
+                } else {
+                    setConfirmationAction(null);
+                    setStyledMessage(false);
+                    setMessage("You have reached the beginning of the units for this class. You will now be redirected to the class page.");
+
+                    setTimeout(() => {
+                        setMessage("");
+                        navigate(`/${subjectId}/${classId}`);
+                    }, 3000);
+                };
             } else if (contentType === 'summary') {
                 if (topics.length > 0) {
                     const lastTopic = topics[topics.length - 1];
@@ -100,15 +122,9 @@ export default function Units() {
                 flatSubTopics = [
                     ...(currentTopic?.notes?.length ? ['notes'] : []),
                     ...(currentTopic?.terms_defs?.length ? ['terms_defs'] : []),
-                    ...currentTopic?.lessons
+                    ...currentTopic?.lessons ? currentTopic.lessons : []
                 ];
-            }
-
-            // const flatSubTopics = [
-            //     ...(currentTopic.notes?.length ? ['notes'] : []),
-            //     ...(currentTopic.terms_defs?.length ? ['terms_defs'] : []),
-            //     ...currentTopic.lessons
-            // ];
+            };
     
             const currentIndex = flatSubTopics.findIndex(subTopic => subTopic === currentSubTopic);
     
@@ -155,21 +171,25 @@ export default function Units() {
                 };
             } else if (contentType === 'summary') {
                 if (nextUnit) {
-                    const confirmation = window.confirm("Are you sure you want to go to the next unit?");
-                    
-                    if (confirmation) {
+                    setStyledMessage(true);
+                    setConfirmationAction(() => () => confirmNextLesson());
+                    setMessage(`
+                        <h3>You've completed this unit!</h3>
+                        <p>Do you want to move on?</p>
+                    `);
+
+                    function confirmNextLesson() {
                         navigate(`/units/${nextUnit.subjectid}/${nextUnit.classid}/${nextUnit.unique_string_id}`);
-                    } else {
-                        // navigate(`/${subjectId}/${classId}`);
-                        return;
                     };
                 } else {
+                    setConfirmationAction(null);
+                    setStyledMessage(false);
                     setMessage("You have reached the end of the units for this class. You will now be redirected to the class page.");
 
                     setTimeout(() => {
                         setMessage("");
                         navigate(`/${subjectId}/${classId}`);
-                    }, 5000);
+                    }, 3000);
                 };
             };
         } else {
@@ -179,14 +199,9 @@ export default function Units() {
                 flatSubTopics = [
                     ...(currentTopic?.notes?.length ? ['notes'] : []),
                     ...(currentTopic?.terms_defs?.length ? ['terms_defs'] : []),
-                    ...currentTopic?.lessons
+                    ...currentTopic?.lessons ? currentTopic.lessons : []
                 ];
-            }
-            // const flatSubTopics = [
-            //     ...(currentTopic.notes?.length ? ['notes'] : []),
-            //     ...(currentTopic.terms_defs?.length ? ['terms_defs'] : []),
-            //     ...currentTopic.lessons
-            // ];
+            };
         
             const currentIndex = flatSubTopics.findIndex(subTopic => subTopic === currentSubTopic);
         
@@ -224,7 +239,7 @@ export default function Units() {
 
     const refreshTopic = async () => {
         try {
-            const updatedTopics = await fetchWithRetry(`/api/topics/${subjectId}/${classId}/${unitId}`);
+            const updatedTopics = await fetchWithRetry(`/api/topics/${unitId}`);
             const updatedTopic = updatedTopics.find(topic => topic.unique_string_id === currentTopic?.unique_string_id);
             setTopics(updatedTopics);
             setCurrentTopic(updatedTopic);
@@ -246,7 +261,6 @@ export default function Units() {
         async function fetchSubject() {
             try {
                 const subject = await fetchWithRetry(`/api/subjects/${subjectId}`);
-                //const subject = await res.json();
                 setSubject(subject[0]);
                 fetchClass();
             } catch (error) {
@@ -257,7 +271,6 @@ export default function Units() {
         async function fetchClass() {
             try {
                 const cls = await fetchWithRetry(`/api/classes/${subjectId}/${classId}`);
-                //const cls = await res.json();
                 setClass(cls[0]);
                 fetchUnit();
             } catch (error) {
@@ -268,21 +281,30 @@ export default function Units() {
         async function fetchUnit() {
             try {
                 const unit = await fetchWithRetry(`/api/units/${subjectId}/${classId}/${unitId}`);
-                //const unit = await res.json();
                 setUnit(unit[0]);
                 fetchTopics(unit[0]);
+                fetchPreviousUnit(unit[0].unit_index);
                 fetchNextUnit(unit[0].unit_index);
             } catch (error) {
                 console.error(error);
             };
         };
 
-        async function fetchTopics(unit) {
+        async function fetchTopics() {
             try {
-                const topics = await fetchWithRetry(`/api/topics/${subjectId}/${classId}/${unitId}`);
-                //const topics = await res.json();
+                const topics = await fetchWithRetry(`/api/topics/${unitId}`);
                 setTopics(topics);
                 setLoading(false);
+            } catch (error) {
+                console.error(error);
+            };
+        };
+
+        async function fetchPreviousUnit(currentUnitIndex) {
+            try {
+                const units = await fetchWithRetry(`/api/units/${subjectId}/${classId}`);
+                const previousUnit = units.find(unit => unit.unit_index === currentUnitIndex - 1);
+                setPreviousUnit(previousUnit);
             } catch (error) {
                 console.error(error);
             };
@@ -291,7 +313,6 @@ export default function Units() {
         async function fetchNextUnit(currentUnitIndex) {
             try {
                 const units = await fetchWithRetry(`/api/units/${subjectId}/${classId}`);
-                //const units = await res.json();
                 const nextUnit = units.find(unit => unit.unit_index === currentUnitIndex + 1);
                 setNextUnit(nextUnit);
             } catch (error) {
@@ -308,7 +329,7 @@ export default function Units() {
     return (
         <>
             {loading ? <LoadingScreen /> : null}
-            {message && <MessagePopup message={message} setMessage={setMessage} />}
+            {message && <MessagePopup message={message} setMessage={setMessage} styledMessage={styledMessage} confirmationAction={confirmationAction} />}
             <PageTitle title={`${unit.name} | StudyGo`} />
 
             <div className="units-container">
@@ -331,19 +352,19 @@ export default function Units() {
                                             <li key={topic.id} className={`topic-item ${currentTopic === topic ? 'current-topic-item' : ''}`} onClick={(e) => toggleSubtopicDropdown(e, topic)}>
                                                 {topic.name}
                                                 <span className="sub-topic-total-index">
-                                                    {topic.lessons?.length + (topic.notes ? 1 : 0) + (topic.terms_defs ? 1 : 0)}
+                                                    {(topic?.lessons ? topic.lessons.length : 0) + (topic.notes ? 1 : 0) + (topic.terms_defs ? 1 : 0)}
                                                 </span>
                                             </li>
 
                                             {currentTopic?.unique_string_id === topic.unique_string_id && (
                                                 <ul className="topic-dropdown">
-                                                    {currentTopic?.notes.length > 0 && (
+                                                    {currentTopic?.notes?.length > 0 && (
                                                         <li className={`sub-topic-item ${currentSubTopic === 'notes' ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, 'notes')}>Notes</li>
                                                     )}
-                                                    {currentTopic?.terms_defs.length > 0 && (
+                                                    {currentTopic?.terms_defs?.length > 0 && (
                                                         <li className={`sub-topic-item ${currentSubTopic === 'terms_defs' ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, 'terms_defs')}>Term/Definitions</li>
                                                     )}
-                                                    {currentTopic?.lessons.length > 0 && (
+                                                    {currentTopic?.lessons?.length > 0 && (
                                                         <>
                                                             {currentTopic.lessons.map((lesson, index) => (
                                                                 <li className={`sub-topic-item ${currentSubTopic === lesson ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, lesson)}>Lesson {++index}</li>

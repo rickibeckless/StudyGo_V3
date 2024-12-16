@@ -24,9 +24,8 @@
 #subjects-filter-holder {
     width: 100%;
     background-color: #ffffff;
-    border-right: 2px solid #e0e0e0;
-    padding: 2rem;
-    box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
+    padding: 1rem 2rem;
+    box-shadow: 0 0.2rem 0.5rem #0000001a;
     position: sticky;
     top: 6rem;
     max-height: calc(100vh - 7rem);
@@ -37,7 +36,7 @@ form {
     margin-bottom: 2rem;
 }
 
-label {
+label, .form-label {
     font-size: 1.1rem;
     font-weight: 500;
     color: #333333;
@@ -46,7 +45,8 @@ label {
 }
 
 input,
-select {
+select,
+textarea {
     width: 100%;
     padding: 0.8rem;
     border: 1px solid #cccccc;
@@ -176,7 +176,7 @@ input[type="checkbox"]:focus + .custom-checkbox {
     border-radius: 0.5rem;
     box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
-    overflow: scroll;
+    overflow: auto;
     cursor: pointer;
 
     height: 50vh;
@@ -283,8 +283,12 @@ li.unit-item-holder {
 
 #default-li {
     text-align: center;
-    color: #999999;
+    color: #575757;
     font-style: italic;
+    font-size: 1.1rem;
+    padding: 1rem;
+    grid-column: 1 / -1;
+    list-style: none;
 }
 
 /* HAMBURGER STYLES */

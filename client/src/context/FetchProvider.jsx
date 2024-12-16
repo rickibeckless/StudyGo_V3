@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 
 export const FetchContext = createContext();
 
@@ -12,11 +12,10 @@ export function FetchProvider({ children }) {
         while (attempt < maxRetries) {
             try {
                 const res = await fetch(url, options);
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
                 const data = await res.json();
                 setRetryCount(0);
+
+                if (!res.ok) return;
                 return data;
             } catch (error) {
                 console.error('Fetch failed:', error);

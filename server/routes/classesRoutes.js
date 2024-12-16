@@ -1,5 +1,12 @@
 import express from 'express';
-import { addClass, getClasses, getClassById, getClassesBySubject, getUnitsByClass, getUnitsById } from '../controllers/classesControllers.js';
+import { 
+    addClass, 
+    getClasses, 
+    getClassById, 
+    getClassesBySubject, 
+    getUnitsByClass, 
+    getUnitsById 
+} from '../controllers/classesControllers.js';
 
 const router = express.Router();
 

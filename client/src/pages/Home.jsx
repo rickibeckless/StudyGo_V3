@@ -77,7 +77,7 @@ export default function Home() {
                 </section>
             </main>
 
-            {message && <MessagePopup message={message} />}
+            {message && <MessagePopup message={message} setMessage={setMessage} />}
         </>
     );
 };

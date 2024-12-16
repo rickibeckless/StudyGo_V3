@@ -55,6 +55,9 @@ export const getAllUniqueIds = async () => {
 
         for (const tableName of tableNames) {
             const tableDataResult = await pool.query(`SELECT unique_string_id FROM ${tableName}`);
+            if (!tableDataResult.rows) {
+                continue;
+            };
             tableDataResult.rows.forEach(row => {
                 allUniqueIds.add(row.unique_string_id);
             });
