@@ -1,19 +1,17 @@
 import { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { FetchContext } from "../context/FetchProvider.jsx";
 import PageTitle from "../components/PageTitle.jsx";
 import LoadingScreen from "../components/LoadingScreen.jsx";
 import MessagePopup from "../components/MessagePopup.jsx";
 import "../styles/subjects.css";
 
+import NewSubjectModal from "../components/subjectsComponents/NewSubjectModal.jsx";
 import NewClassModal from "../components/subjectsComponents/NewClassModal.jsx";
 
 export default function Subjects() {
     const { fetchWithRetry } = useContext(FetchContext);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
-
-    const navigate = useNavigate();
 
     const [subjects, setSubjects] = useState([]);
     const [classes, setClasses] = useState([]);
@@ -28,12 +26,28 @@ export default function Subjects() {
 
     const [currentSubject, setCurrentSubject] = useState([]);
     const [openNewClassModal, setOpenNewClassModal] = useState(false);
+    const [openNewSubjectModal, setOpenNewSubjectModal] = useState(false);
 
-    const toggleNewClassModal = (e, subject) => {
-        e.stopPropagation();
-        setCurrentSubject(subject);
-        setOpenNewClassModal(!openNewClassModal);
-        document.body.classList.toggle("modal-open");
+    const toggleAddForm = (type, parent) => {
+        if (openNewClassModal || openNewSubjectModal) {
+            document.body.classList.remove("modal-open");
+        } else {
+            document.body.classList.add("modal-open");
+        };
+
+        if (type === "subject") {
+            setOpenNewSubjectModal(!openNewSubjectModal);
+            fetchSubjects();
+        } else if (type === "class") {
+            setCurrentSubject(parent);
+            setOpenNewClassModal(!openNewClassModal);
+            fetchClasses();
+        } else {
+            setOpenNewSubjectModal(false);
+            setOpenNewClassModal(false);
+            fetchSubjects();
+            fetchClasses();
+        }
     };
 
     const toggleClassDropdown = async (e, subject) => {
@@ -41,8 +55,11 @@ export default function Subjects() {
 
         setOpenClassDropdown(!openClassDropdown);
 
-        const classesData = await fetchWithRetry(`/api/classes/${subject.unique_string_id}`);
-        //const classesData = await classesRes.json();
+        let classesData = await fetchWithRetry(`/api/classes/${subject.unique_string_id}`);
+
+        if (!classesData || classesData.length === 0 || classesData === undefined || classesData === null) {
+            classesData = [];
+        };
         setClassesBySubject(classesData);
 
         setOpenSubjectId(openSubjectId === subject.unique_string_id ? null : subject.unique_string_id);
@@ -53,48 +70,35 @@ export default function Subjects() {
         setOpenUnitDropdown(!openUnitDropdown);
 
         const unitsData = await fetchWithRetry(`/api/units/${cls.subjectid}/${cls.unique_string_id}`);
-        //const unitsData = await unitsRes.json();
         setUnitsByClass(unitsData);
 
         setOpenClassId(openClassId === cls.unique_string_id ? null : cls.unique_string_id);
     };
 
+    async function fetchSubjects() {
+        setLoading(true);
+        try {
+            const subjectData = await fetchWithRetry(`/api/subjects/`);
+            setSubjects(subjectData);
+        } catch (error) {
+            setMessage("Error getting subjects: ", error.message);
+        };
+        setLoading(false);
+    };
+
+    async function fetchClasses() {
+        setLoading(true);
+        try {
+            const classesData = await fetchWithRetry(`/api/classes/`);
+            setClasses(classesData);
+        } catch (error) {
+            setMessage("Error getting classes: ", error.message);
+        };
+        setLoading(false);
+    };
+
     useEffect(() => {
-        async function fetchSubjects() {
-            try {
-                const subjectData = await fetchWithRetry(`/api/subjects/`);
-                //const subjectData = await subjectsRes.json();
-
-                if (!subjectData) {
-                    setLoading(false);
-                    navigate("/404");
-                };
-
-                setSubjects(subjectData);
-
-                setLoading(false);
-            } catch (error) {
-                setLoading(false);
-                setMessage("Error getting subjects: ", error.message);
-            };
-        };
-
-        async function fetchClasses() {
-            try {
-                setLoading(true);
-
-                const classesData = await fetchWithRetry(`/api/classes/`);
-                //const classesData = await classesRes.json();
-
-                setClasses(classesData);
-
-                setLoading(false);
-            } catch (error) {
-                setLoading(false);
-                setMessage("Error getting classes: ", error.message);
-            };
-        };
-
+        setLoading(true);
         fetchSubjects();
         fetchClasses();
     }, []);
@@ -139,7 +143,10 @@ export default function Subjects() {
                 </aside>
 
                 <section id="subjects-section">
-                    <h2>All Subjects</h2>
+                    <div id="subjects-section-header">
+                        <h2>All Subjects</h2>
+                        <button id="add-subject-button" title="Add a subject" onClick={() => toggleAddForm("subject")}>Add Subject</button>
+                    </div>
                     <ul id="subject-list">
                         {subjects.length === 0 ? (
                             <li id="default-li" key="default-li">Nothing yet! <a href="#">Add some subjects</a> to get started!</li>
@@ -154,27 +161,18 @@ export default function Subjects() {
                                     {openSubjectId !== subject.unique_string_id ? (
                                         <div className="subject-description">
                                             {subject.description}
-                                            <div className="count-and-button-holder">
-                                                <p className="subject-class-count">
-                                                    <span className="subject-class-count-number">
-                                                        {classes.filter(cls => cls.subjectid === subject.unique_string_id).length}
-                                                    </span>
-                                                    {classes.filter(cls => cls.subjectid === subject.unique_string_id).length === 1 ? " class" : " classes"}
-                                                </p>
-                                                <button className="add-class-button" title="Add a class" onClick={(e) => toggleNewClassModal(e, subject)}>+</button>
-                                            </div>
                                         </div>
                                     ) : (
-                                        classesBySubject.map(cls => (
-                                            <ul className="class-dropdown" id={`${cls.unique_string_id}-class-dropdown`}>
-                                                <div className="class-holder">
-                                                    {classesBySubject.length === 0 ? (
-                                                        <li className="class" key="default-class-li">No classes available!</li>
-                                                    ) : ( <>
+                                        <div className="class-holder">
+                                            {classesBySubject.length === 0 ? (
+                                                <li className="class" key="default-class-li">No classes available!</li>
+                                            ) : (
+                                                classesBySubject.map(cls => (
+                                                    <>
                                                         <li className="class" id={`${cls.unique_string_id}-class`} key={`${cls.unique_string_id}-class`} onClick={(e) => toggleUnitDropdown(e, cls)}>{cls.name}</li>
-                                                        
+
                                                         {openClassId === cls.unique_string_id && (
-                                                            <ul className="unit-dropdown" id={`${cls.unique_string_id}-unit-dropdown`}>
+                                                            <ul className="class-dropdown" id={`${cls.unique_string_id}-class-dropdown`}>
                                                                 {unitsByClass.length === 0 ? (
                                                                     <li className="unit-item-holder">
                                                                         <p className="unit">No units available!</p>
@@ -188,23 +186,30 @@ export default function Subjects() {
                                                                 )}
                                                             </ul>
                                                         )}
-                                                    </> )}
-                                                </div>
-                                            </ul>
-                                        ))
+                                                    </>
+                                                ))
+                                            )}
+                                        </div>
                                     )}
+
+                                    <div className="count-and-button-holder">
+                                        <p className="subject-class-count">
+                                            <span className="subject-class-count-number">
+                                                {classes.filter(cls => cls.subjectid === subject.unique_string_id).length}
+                                            </span>
+                                            {classes.filter(cls => cls.subjectid === subject.unique_string_id).length === 1 ? " class" : " classes"}
+                                        </p>
+                                        <button className="add-class-button" title="Add a class" onClick={() => toggleAddForm("class", subject)}>Add Class</button>
+                                    </div>
                                 </div>
                             ))
                         )}
                     </ul>
                 </section>
-            </main>                                            
-            {openNewClassModal && (
-                <NewClassModal
-                    subject={currentSubject}
-                    toggleNewClassModal={toggleNewClassModal}
-                />
-            )}
+            </main>
+
+            {openNewSubjectModal && (<NewSubjectModal toggleAddForm={toggleAddForm} />)}
+            {openNewClassModal && (<NewClassModal subject={currentSubject} toggleAddForm={toggleAddForm} />)}
         </>
     );
 };

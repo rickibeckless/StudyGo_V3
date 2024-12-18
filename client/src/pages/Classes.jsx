@@ -107,11 +107,11 @@ export default function Classes() {
     return (
         <main id="subjects-body" className="container">
             <aside id="subjects-filter-holder">
-                <p id="subject-clear-btn" onClick={() => { clearSearchAndFilters() }}>clear filters</p>
+                <p id="subject-clear-btn" onClick={() => clearSearchAndFilters()}>clear filters</p>
                 <form id="subjects-search-form">
                     <label htmlFor="subjects-search">Search Classes</label>
                     <input type="text" id="subjects-search" name="subjects-search" placeholder="Search for a class..." />
-                    <button type="button" id="subject-search-btn" onClick={() => {handleSearch()}}>Search</button>
+                    <button type="button" id="subject-search-btn" onClick={() => handleSearch()}>Search</button>
                 </form>
 
                 <form id="subjects-filter-form">
@@ -135,7 +135,7 @@ export default function Classes() {
                         <label htmlFor="subjects-filter-show-empty" className="custom-checkbox"></label>
                     </div>
 
-                    <button type="button" id="subject-filter-btn" onClick={() => {applyFilters()}}>Filter</button>
+                    <button type="button" id="subject-filter-btn" onClick={() => applyFilters()}>Filter</button>
                 </form>
             </aside>
 

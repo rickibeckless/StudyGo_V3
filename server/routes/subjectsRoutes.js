@@ -1,7 +1,8 @@
 import express from 'express';
 import { 
     getSubjects, 
-    getSubjectsById 
+    getSubjectsById,
+    createSubject
 } from '../controllers/subjectsControllers.js';
 
 const router = express.Router();
@@ -10,5 +11,6 @@ const router = express.Router();
 
 router.get('/', getSubjects);
 router.get('/:subjectId', getSubjectsById);
+router.post('/new', createSubject);
 
 export default router;

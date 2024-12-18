@@ -12,10 +12,13 @@ export function FetchProvider({ children }) {
         while (attempt < maxRetries) {
             try {
                 const res = await fetch(url, options);
+
+                if (!res.ok) return;
+                if (res.status === 204) return;
+
                 const data = await res.json();
                 setRetryCount(0);
 
-                if (!res.ok) return;
                 return data;
             } catch (error) {
                 console.error('Fetch failed:', error);

@@ -3,25 +3,25 @@ import { useNavigate } from "react-router-dom";
 import PageTitle from "../PageTitle.jsx";
 import MessagePopup from "../MessagePopup.jsx";
 import LoadingScreen from "../LoadingScreen.jsx";
-import UnitFormModal from "./UnitFormModal.jsx";
+import NewClassModal from "../subjectsComponents/NewClassModal.jsx";
+import AddUnitModal from "../classDetailsComponents/AddUnitModal.jsx";
 
 export default function SubjectPage({ subjectId }) {
     const [subject, setSubject] = useState(null);
     const [classes, setClasses] = useState(null);
     const [unitsByClass, setUnitsByClass] = useState({});
     const [topicsByUnit, setTopicsByUnit] = useState({});
+    const [openClassFormModal, setOpenClassFormModal] = useState(false);
     const [openUnitFormModal, setOpenUnitFormModal] = useState(false);
-    const [unitFormModalIds, setUnitFormModalIds] = useState({ subjectId: null, classId: null });
     const [openClassId, setOpenClassId] = useState(null);
     const [openUnitId, setOpenUnitId] = useState(null);
+    const [editingClass, setEditingClass] = useState({});
 
+    const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
+    const [styledMessage, setStyledMessage] = useState(false);
+    const [confirmationAction, setConfirmationAction] = useState(null);
     const navigate = useNavigate();
-
-    const toggleUnitFormModal = (subjectId, classId) => {
-        setOpenUnitFormModal(!openUnitFormModal);
-        setUnitFormModalIds({ subjectId, classId });
-    };
 
     const toggleUnitsDropdown = (e, classId) => {
         e.stopPropagation();
@@ -39,34 +39,36 @@ export default function SubjectPage({ subjectId }) {
         document.body.classList.remove("modal-open");
     };
 
+    const fetchSubject = async () => {
+        const subjectRes = await fetch(`/api/subjects/${subjectId}`);
+        if (subjectRes.status === 404 || subjectRes.status === 500) {
+            navigate('/404');
+        };
+
+        const subjectData = await subjectRes.json();
+
+        setSubject(subjectData[0]);
+    };
+
+    const fetchClasses = async () => {
+        const classesRes = await fetch(`/api/classes/${subjectId}`);
+        const classesData = await classesRes.json();
+        setClasses(classesData);
+
+        classesData.forEach(cls => fetchUnits(cls.unique_string_id));
+    };
+
     useEffect(() => {
         try {
-            const fetchSubject = async () => {
-                const subjectRes = await fetch(`/api/subjects/${subjectId}`);
-                if (subjectRes.status === 404 || subjectRes.status === 500) {
-                    navigate('/404');
-                };
-    
-                const subjectData = await subjectRes.json();
-    
-                setSubject(subjectData[0]);
-            };
-    
-            const fetchClasses = async () => {
-                const classesRes = await fetch(`/api/classes/${subjectId}`);
-                const classesData = await classesRes.json();
-                setClasses(classesData);
-    
-                classesData.forEach(cls => fetchUnits(cls.unique_string_id));
-            };
-    
             fetchSubject();
             fetchClasses();
         } catch (error) {
-            console.error('Error fetching subject:', error);
+            setConfirmationAction(null);
+            setStyledMessage(false);
             setMessage('Error fetching subject');
         }
 
+        setLoading(false);
     }, [subjectId]);
 
     const fetchUnits = async (classId) => {
@@ -95,14 +97,38 @@ export default function SubjectPage({ subjectId }) {
         return <LoadingScreen />;
     };
 
+    const toggleAddForm = (type, parent) => {
+        if (openUnitFormModal || openClassFormModal) {
+            document.body.classList.remove("modal-open");
+        } else {
+            document.body.classList.add("modal-open");
+        };
+
+        if (type === "class") {
+            setOpenClassFormModal(!openClassFormModal);
+            fetchClasses();
+        } else if (type === "unit") {
+            setEditingClass(parent);
+            setOpenUnitFormModal(!openUnitFormModal);
+            fetchUnits(parent.unique_string_id);
+        } else {
+            setOpenClassFormModal(false);
+            setOpenUnitFormModal(false);
+        };
+    };
+
     return (
         <>
+            {loading ? <LoadingScreen /> : null}
             <PageTitle title={`${subject.name} Classes | StudyGo`} />
-            {message && <MessagePopup message={message} setMessage={setMessage} />}
-            <h2>All {subject.name} Classes</h2>
-            <ul id="subject-list">
-                {classes === null && <LoadingScreen />}
+            {message && <MessagePopup message={message} setMessage={setMessage} styledMessage={styledMessage} confirmationAction={confirmationAction} />}
 
+            <div id="subjects-section-header">
+                <h2>All {subject.name} Classes</h2>
+                <button id="add-class-button" title="Add a class" onClick={() => toggleAddForm("class", subject)}>Add Class</button>
+            </div>
+
+            <ul id="subject-list">
                 {classes?.length === 0 ? (
                     <li id="default-li">
                         Nothing yet! <a href="#">Add some classes</a> to get started!
@@ -120,34 +146,15 @@ export default function SubjectPage({ subjectId }) {
                             {openClassId !== cls.unique_string_id ? (
                                 <div className="subject-description" >
                                     {cls.description}
-
-                                    <div className="count-and-button-holder">
-                                        {unitsByClass[cls.unique_string_id] ? (
-                                            unitsByClass[cls.unique_string_id].length === 1 ? (
-                                                <p className="subject-class-count">
-                                                    <span className="subject-class-count-number">{unitsByClass[cls.unique_string_id].length}</span> unit
-                                                </p>
-                                            ) : (
-                                                <p className="subject-class-count">
-                                                    <span className="subject-class-count-number">{unitsByClass[cls.unique_string_id].length}</span> units
-                                                </p>
-                                            )
-                                        ) : (
-                                            <LoadingScreen />
-                                        )}
-                                        <button className="add-class-button" title="Add a unit" onClick={() => toggleUnitFormModal(subjectId, cls.unique_string_id)}>+</button>
-                                    </div>
                                 </div>
                             ) : (
-                                <ul className="class-dropdown">
+                                <div className="class-holder">
                                     {unitsByClass[cls.unique_string_id] ? (
                                         unitsByClass[cls.unique_string_id].length === 0 ? (
-                                            <div className="class-holder">
-                                                <li className="class">No Units Available!</li>
-                                            </div>
+                                            <li className="class">No Units Available!</li>
                                         ) : (
                                             unitsByClass[cls.unique_string_id]?.map(unit => (
-                                                <div className="class-holder" key={unit.unique_string_id}>
+                                                <>
                                                     <li className="class" onClick={(e) => toggleTopicsDropdown(e, unit.unique_string_id)}>
                                                         {unit.name}
                                                     </li>
@@ -166,30 +173,46 @@ export default function SubjectPage({ subjectId }) {
                                                                     </li>
                                                                 ))
                                                             ) : (
-                                                                <LoadingScreen />
+                                                                <li className="unit-item-holder">
+                                                                    <p className="unit">No topics available!</p>
+                                                                </li>
                                                             )}
                                                         </ul>
                                                     )}
-                                                </div>
+                                                </>
                                             ))
                                         )
                                     ) : (
-                                        <LoadingScreen />
+                                        <li className="class">No Units Available!</li>
                                     )}
-                                </ul>
+                                </div>
                             )}
+
+                            <div className="count-and-button-holder">
+                                {unitsByClass[cls.unique_string_id] ? (
+                                    unitsByClass[cls.unique_string_id].length === 1 ? (
+                                        <p className="subject-class-count">
+                                            <span className="subject-class-count-number">{unitsByClass[cls.unique_string_id].length}</span> unit
+                                        </p>
+                                    ) : (
+                                        <p className="subject-class-count">
+                                            <span className="subject-class-count-number">{unitsByClass[cls.unique_string_id].length}</span> units
+                                        </p>
+                                    )
+                                ) : (
+                                    <p className="subject-class-count">
+                                        <span className="subject-class-count-number">0</span> units
+                                    </p>
+                                )}
+                                <button className="add-class-button" title="Add a unit" onClick={() => toggleAddForm("unit", cls)}>Add Unit</button>
+                            </div>
                         </div>
                     ))
                 )}
             </ul>
-            {openUnitFormModal && (
-                <UnitFormModal
-                    subjectId={unitFormModalIds.subjectId}
-                    classId={unitFormModalIds.classId}
-                    classes={classes}
-                    toggleUnitFormModal={toggleUnitFormModal}
-                />
-            )}
+
+            {openClassFormModal && <NewClassModal toggleAddForm={toggleAddForm} subject={subject} />}
+            {openUnitFormModal && <AddUnitModal toggleAddForm={toggleAddForm} cls={editingClass} />}
         </>
     );
 };

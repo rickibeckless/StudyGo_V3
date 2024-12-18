@@ -62,7 +62,6 @@ form button {
 }
 
 .add-class-button {
-    width: 2rem;
     height: 1.5rem;
 }
 
@@ -152,11 +151,30 @@ input[type="checkbox"]:focus + .custom-checkbox {
     padding: 2rem;
 }
 
-#subjects-section h2 {
+#subjects-section-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#subjects-section-header h2 {
     font-size: 1.5rem;
     margin: 2rem 0;
     color: #333333;
     text-align: center;
+    flex: 1;
+}
+
+#subjects-section-header button,
+.add-class-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    padding: 0.5rem 1rem;
+    font-size: .85rem;
 }
 
 #subject-list {
@@ -230,13 +248,17 @@ input[type="checkbox"]:focus + .custom-checkbox {
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    margin: 2rem 0 .5rem;
+    
+    background-color: #ffffff;
+    
+    position: sticky;
+    bottom: 0;
+    padding: 1rem;
 }
 
 .subject-class-count {
     font-size: 1rem;
     font-weight: 500;
-    /* text-align: right; */
 }
 
 .subject-class-count-number {
@@ -244,21 +266,25 @@ input[type="checkbox"]:focus + .custom-checkbox {
     font-weight: 600;
 }
 
-.class-dropdown {
+.class-holder {
+    list-style-type: none;
+    /* height: 100%; */
+}
+
+.class-holder li {
+    padding: 1rem 1.5rem;
     list-style-type: none;
 }
 
 .class-dropdown li {
-    padding: 1rem 1.5rem;
     border-bottom: 0.1rem solid #e0e0e0;
-    list-style-type: none;
 }
 
 .class-dropdown li:last-child {
     border-bottom: none;
 }
 
-.class-dropdown li:hover {
+.class-holder li:hover {
     background-color: #e0e0e0;
 }
 
@@ -291,24 +317,6 @@ li.unit-item-holder {
     list-style: none;
 }
 
-/* HAMBURGER STYLES */
-
-.hamburger {
-    display: none;
-    cursor: pointer;
-    padding-right: 1.5%;
-}
-
-.bar {
-    display: block;
-    width: 25px;
-    height: 3px;
-    margin: 5px auto;
-    -webkit-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
-    background-color: #666666;
-}
-
 /* MEDIA QUERIES */
 
 @media (max-width: 800px) {
@@ -337,18 +345,5 @@ li.unit-item-holder {
 
     #subject-list {
         justify-items: center;
-    }
-    
-    .hamburger {
-        display: block;
-    }
-    .hamburger.active .bar:nth-child(2) {
-        opacity: 0;
-    }
-    .hamburger.active .bar:nth-child(1) {
-        transform: translateY(8px) rotate(45deg);
-    }
-    .hamburger.active .bar:nth-child(3) {
-        transform: translateY(-8px) rotate(-45deg);
     }
 }

@@ -28,13 +28,11 @@ export const getClassById = async (req, res) => {
 export const addClass = async (req, res) => {    
     try {
         const subjectId = req.params.subjectId;
-        const { name, description, index } = req.body;
-
-        const currentTimestamp = new Date();
+        const { name, description, class_index } = req.body;
 
         const results = await pool.query(
-            'INSERT INTO classes (subjectid, name, description, class_index, date_created, date_updated) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', 
-            [subjectId, name, description, index, currentTimestamp, currentTimestamp]
+            'INSERT INTO classes (subjectid, name, description, class_index) VALUES ($1, $2, $3, $4) RETURNING *', 
+            [subjectId, name, description, class_index]
         );
 
         res.status(201).json(results.rows);
@@ -71,7 +69,7 @@ export const getClassesBySubject = async (req, res) => {
         const results = await pool.query('SELECT * FROM classes WHERE subjectid = $1', [req.params.subjectId]);
 
         if (results.rows.length === 0) {
-            return res.status(404).json({ error: 'Classes not found' });
+            return res.status(204).send();
         };
 
         res.status(200).json(results.rows);
