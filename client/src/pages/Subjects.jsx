@@ -3,6 +3,7 @@ import { FetchContext } from "../context/FetchProvider.jsx";
 import PageTitle from "../components/PageTitle.jsx";
 import LoadingScreen from "../components/LoadingScreen.jsx";
 import MessagePopup from "../components/MessagePopup.jsx";
+import Walkthrough from "../components/Walkthrough.jsx";
 import "../styles/subjects.css";
 
 import NewSubjectModal from "../components/subjectsComponents/NewSubjectModal.jsx";
@@ -12,6 +13,12 @@ export default function Subjects() {
     const { fetchWithRetry } = useContext(FetchContext);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
+    
+    const initialHiddenState = JSON.parse(localStorage.getItem("hiddenWalkthrough")) || [];
+    const isHidden = initialHiddenState.includes("subjects");
+    const [hiddenWalkthrough, setHiddenWalkthrough] = useState(isHidden);
+    const [walkthrough, setWalkthrough] = useState(false);
+    const [walkthroughData, setWalkthroughData] = useState({});
 
     const [subjects, setSubjects] = useState([]);
     const [classes, setClasses] = useState([]);
@@ -101,13 +108,63 @@ export default function Subjects() {
         setLoading(true);
         fetchSubjects();
         fetchClasses();
+
+        if (!hiddenWalkthrough) {
+            document.body.classList.add("modal-open");
+            setWalkthrough(true);
+            setWalkthroughData({
+                page: "subjects",
+                steps: [
+                    {
+                        index: 1,
+                        title: "Welcome to the 'Subjects' Page!",
+                        instruction: "Here's a quick walkthrough we've put together to help you get started! (p.s: you can click the 'x' if you don't want to hear it!)",
+                        focusedElement: null,
+                        assets: ["https://i.ibb.co/cTZkxJR/Code-Path-Study-Go-v3-Walkthrough.gif"]
+                    },
+                    {
+                        index: 2,
+                        title: "Search and Filters",
+                        instruction: "On your left, you have your search and filters. Search for a subject or filter how the subjects are sorted!",
+                        focusedElement: "subjects-filter-holder",
+                        assets: []
+                    },
+                    {
+                        index: 3,
+                        title: "View all Subjects",
+                        instruction: "On your right, you have a view of all subjects currently on StudyGo! Select a subject to view the top five classes with the most content, or select (all ___ classes) to view them all!",
+                        focusedElement: "subjects-section",
+                        assets: []
+                    },
+                    {
+                        index: 4,
+                        title: "Happy Studying!",
+                        instruction: "That's it for this walkthrough so we'll turn you loose! Enjoy your time here and study hard!",
+                        focusedElement: null,
+                        assets: []
+                    }
+                ]
+            });
+        } else {
+            setWalkthrough(false);
+            document.body.classList.remove("modal-open");
+            setWalkthroughData({});
+        };
     }, []);
 
     return (
         <>
             <PageTitle title="All Subjects | StudyGo" />
-            {loading ? <LoadingScreen /> : null}
+            {loading && <LoadingScreen />}
             {message && <MessagePopup message={message} setMessage={setMessage} />}
+            {walkthrough && 
+                <Walkthrough 
+                    walkthroughData={walkthroughData}
+                    setWalkthrough={setWalkthrough}
+                    setWalkthroughData={setWalkthroughData}
+                    setHiddenWalkthrough={setHiddenWalkthrough}
+                />
+            }
 
             <main id="subjects-body" className="container">
                 <aside id="subjects-filter-holder">

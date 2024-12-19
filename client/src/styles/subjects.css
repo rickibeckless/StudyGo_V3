@@ -149,6 +149,7 @@ input[type="checkbox"]:focus + .custom-checkbox {
 #subjects-section {
     flex-grow: 1;
     padding: 2rem;
+    background-color: #f9f9f9;
 }
 
 #subjects-section-header {

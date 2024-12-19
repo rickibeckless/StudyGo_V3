@@ -1,0 +1,94 @@
+.walkthrough {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+}
+
+.walkthrough #walkthrough-overlay {
+    width: 100%;
+    height: 100%;
+    background-color: #0000004d;
+    z-index: 1000;
+}
+
+.walkthrough-focused-element {
+    z-index: 1001;
+}
+
+.walkthrough #walkthrough-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: 0;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #00000080;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+
+    max-width: 35vw;
+}
+
+.walkthrough .walkthrough-header .walkthrough-close {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+}
+
+.walkthrough .walkthrough-header .walkthrough-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.walkthrough .walkthrough-assets {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+.walkthrough .walkthrough-assets .walkthrough-asset {
+    width: 100%;
+    padding: .5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.walkthrough .walkthrough-footer {
+    display: grid;
+    grid-template-areas: "back index next";
+    margin-top: 20px;
+}
+
+.walkthrough .walkthrough-footer .walkthrough-back,
+.walkthrough .walkthrough-footer .walkthrough-next,
+.walkthrough .walkthrough-header .walkthrough-close {
+    padding: 0 .5rem;
+    width: 2rem;
+}
+
+.walkthrough .walkthrough-footer .walkthrough-back {
+    grid-area: back;
+    justify-self: start;
+}
+
+.walkthrough .walkthrough-footer .walkthrough-index {
+    grid-area: index;
+    justify-self: center;
+}
+
+.walkthrough .walkthrough-footer .walkthrough-next {
+    grid-area: next;
+    justify-self: end;
+}

@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import DOMPurify from 'dompurify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faStar, faPenToSquare, faPlus, faBan } from '@fortawesome/free-solid-svg-icons';
@@ -117,12 +117,12 @@ export default function UnitsBodyContent({ topic, currentSubTopic, subTopics, re
             setMessage("Note cannot be empty");
             return;
         };
-    
+
         try {
             let url = '';
             let method = '';
             let body = {};
-    
+
             if (isEditing) {
                 url = `/api/topics/${topic.subjectid}/${topic.classid}/${topic.unitid}/${topic.unique_string_id}/update/note`;
                 method = 'PATCH';
@@ -135,7 +135,7 @@ export default function UnitsBodyContent({ topic, currentSubTopic, subTopics, re
                 method = 'PATCH';
                 body = { note: noteForm };
             }
-    
+
             const res = await fetch(url, {
                 method,
                 headers: {
@@ -143,9 +143,9 @@ export default function UnitsBodyContent({ topic, currentSubTopic, subTopics, re
                 },
                 body: JSON.stringify(body),
             });
-    
+
             const data = await res.json();
-    
+
             if (res.ok) {
                 refreshTopic();
                 setMessage(isEditing ? "Note updated successfully" : "Note added successfully");
@@ -171,48 +171,58 @@ export default function UnitsBodyContent({ topic, currentSubTopic, subTopics, re
 
             {currentSubTopic === 'notes' ? (
                 <>
-                    {topic?.notes?.map((note, index) => (
+                    {topic?.notes?.length > 0 ? (
+                        topic?.notes?.map((note, index) => (
+                            <ul className="note-holder">
+                                <button className={`sub-topic-btn star-btn note-star-btn ${note.starred === true ? 'starred' : ''}`} type="button" onClick={() => handleStarClick(note)}>
+                                    <FontAwesomeIcon icon={faStar} />
+                                </button>
+
+                                {editCurrentNote ? (
+                                    noteToEdit === note ? (
+                                        <span className="edit-note-holder">
+                                            <li className="note">
+                                                <input type="text" className="add-sub-topic-input add-note-input" placeholder="edit note..." name="text" value={editNoteForm.text || ''} onChange={(e) => handleNoteChange(e, 'edit')} />
+                                            </li>
+
+                                            <span className="note-btn-holder">
+                                                <button className="sub-topic-btn delete-sub-topic-btn" type="button" onClick={(e) => toggleEditEvent(e)}>
+                                                    <FontAwesomeIcon icon={faBan} />
+                                                </button>
+                                                <button className="sub-topic-btn edit-sub-topic-btn" type="button" onClick={(e) => addNewNote(e)}>
+                                                    <FontAwesomeIcon icon={faPlus} />
+                                                </button>
+                                            </span>
+                                        </span>
+                                    ) : (
+                                        <li key={index} className="note">{note.text}</li>
+                                    )
+                                ) : (
+                                    <>
+                                        <li key={index} className="note">{note.text}</li>
+
+                                        <span className="note-btn-holder">
+                                            <button className="sub-topic-btn edit-sub-topic-btn" type="button" onClick={() => handleEditClick(note)}>
+                                                <FontAwesomeIcon icon={faPenToSquare} />
+                                            </button>
+
+                                            <button className="sub-topic-btn delete-sub-topic-btn" type="button" onClick={() => handleDeleteClick(note)}>
+                                                <FontAwesomeIcon icon={faTrashCan} />
+                                            </button>
+                                        </span>
+                                    </>
+                                )}
+                            </ul>
+                        ))
+                    ) : (
                         <ul className="note-holder">
-                            <button className={`sub-topic-btn star-btn note-star-btn ${note.starred === true ? 'starred' : ''}`} type="button" onClick={() => handleStarClick(note)}>
+                            <button className="sub-topic-btn star-btn note-star-btn starred" type="button">
                                 <FontAwesomeIcon icon={faStar} />
                             </button>
 
-                            {editCurrentNote ? (
-                                noteToEdit === note ? (
-                                    <span className="edit-note-holder">
-                                        <li className="note">
-                                            <input type="text" className="add-sub-topic-input add-note-input" placeholder="edit note..." name="text" value={editNoteForm.text || ''} onChange={(e) => handleNoteChange(e, 'edit')} />
-                                        </li>
-                                        
-                                        <span className="note-btn-holder">
-                                            <button className="sub-topic-btn delete-sub-topic-btn" type="button" onClick={(e) => toggleEditEvent(e)}>
-                                                <FontAwesomeIcon icon={faBan} />
-                                            </button>
-                                            <button className="sub-topic-btn edit-sub-topic-btn" type="button" onClick={(e) => addNewNote(e)}>
-                                                <FontAwesomeIcon icon={faPlus} />
-                                            </button>
-                                        </span>
-                                    </span>
-                                ) : (
-                                    <li key={index} className="note">{note.text}</li>
-                                )
-                            ) : (
-                                <>
-                                    <li key={index} className="note">{note.text}</li>
-                                
-                                    <span className="note-btn-holder">
-                                        <button className="sub-topic-btn edit-sub-topic-btn" type="button" onClick={() => handleEditClick(note)}>
-                                            <FontAwesomeIcon icon={faPenToSquare} />
-                                        </button>
-
-                                        <button className="sub-topic-btn delete-sub-topic-btn" type="button" onClick={() => handleDeleteClick(note)}>
-                                            <FontAwesomeIcon icon={faTrashCan} />
-                                        </button>
-                                    </span>
-                                </>
-                            )}
+                            <li className="note default-subtopic">Got some information to remember? Add some notes!</li>
                         </ul>
-                    ))}
+                    )}
 
                     <ul className="note-holder">
                         <li className="note">
@@ -303,7 +313,7 @@ export default function UnitsBodyContent({ topic, currentSubTopic, subTopics, re
                     <p className="lesson-description">{currentSubTopic.description}</p>
                     <div className="lesson-content" dangerouslySetInnerHTML={{ __html: sanitizedHTML }}></div>
                 </div>
-            ) : null 
+            ) : null
             }
         </>
     );

@@ -102,11 +102,11 @@ export default function Units() {
                     const lastTopic = topics[topics.length - 1];
                     setCurrentTopic(lastTopic);
     
-                    const lastSubTopic = lastTopic.lessons?.length ? lastTopic.lessons[lastTopic.lessons.length - 1] : lastTopic.terms_defs?.length ? 'terms_defs' : lastTopic.notes?.length ? 'notes' : null;
+                    const lastSubTopic = lastTopic.lessons?.length ? lastTopic.lessons[lastTopic.lessons.length - 1] : lastTopic.terms_defs ? 'terms_defs' : lastTopic.notes ? 'notes' : null;
     
                     if (lastSubTopic) {
                         setCurrentSubTopic(lastSubTopic);
-                        setCurrentSubTopicType(lastTopic.lessons?.length ? 'Lesson' : lastTopic.terms_defs?.length ? 'Terms/Definitions' : 'Notes');
+                        setCurrentSubTopicType(lastTopic.lessons?.length ? 'Lesson' : lastTopic.terms_defs ? 'Terms/Definitions' : 'Notes');
                     }
     
                     setDisplaySubTopicContent(true);
@@ -120,8 +120,8 @@ export default function Units() {
 
             if (currentTopic !== 'overview' && currentTopic !== 'summary') {
                 flatSubTopics = [
-                    ...(currentTopic?.notes?.length ? ['notes'] : []),
-                    ...(currentTopic?.terms_defs?.length ? ['terms_defs'] : []),
+                    ...(currentTopic?.notes ? ['notes'] : []),
+                    ...(currentTopic?.terms_defs ? ['terms_defs'] : []),
                     ...currentTopic?.lessons ? currentTopic.lessons : []
                 ];
             };
@@ -140,11 +140,11 @@ export default function Units() {
                 if (lastTopic) {
                     setCurrentTopic(lastTopic);
     
-                    const lastSubTopic = lastTopic.lessons?.length ? lastTopic.lessons[lastTopic.lessons.length - 1] : lastTopic.terms_defs?.length ? 'terms_defs' : lastTopic.notes?.length ? 'notes' : null;
+                    const lastSubTopic = lastTopic.lessons?.length ? lastTopic.lessons[lastTopic.lessons.length - 1] : lastTopic.terms_defs ? 'terms_defs' : lastTopic.notes ? 'notes' : null;
     
                     if (lastSubTopic) {
                         setCurrentSubTopic(lastSubTopic);
-                        setCurrentSubTopicType(lastTopic.lessons?.length ? 'Lesson' : lastTopic.terms_defs?.length ? 'Terms/Definitions' : 'Notes');
+                        setCurrentSubTopicType(lastTopic.lessons?.length ? 'Lesson' : lastTopic.terms_defs ? 'Terms/Definitions' : 'Notes');
                     }
     
                     setDisplaySubTopicContent(true);
@@ -162,8 +162,8 @@ export default function Units() {
             if (contentType === 'overview') {
                 if (topics.length > 0) {
                     setCurrentTopic(topics[0]);
-                    setCurrentSubTopic(topics[0].notes?.length ? 'notes' : topics[0].terms_defs?.length ? 'terms_defs' : topics[0].lessons[0]);
-                    setCurrentSubTopicType(topics[0].notes?.length ? 'Notes' : topics[0].terms_defs?.length ? 'Terms/Definitions' : 'Lesson');
+                    setCurrentSubTopic(topics[0].notes ? 'notes' : topics[0].terms_defs ? 'terms_defs' : topics[0].lessons[0]);
+                    setCurrentSubTopicType(topics[0].notes ? 'Notes' : topics[0].terms_defs ? 'Terms/Definitions' : 'Lesson');
                     setDisplaySubTopicContent(true);
                 } else {
                     setDisplaySubTopicContent(false);
@@ -197,8 +197,8 @@ export default function Units() {
 
             if (currentTopic !== 'overview' && currentTopic !== 'summary') {
                 flatSubTopics = [
-                    ...(currentTopic?.notes?.length ? ['notes'] : []),
-                    ...(currentTopic?.terms_defs?.length ? ['terms_defs'] : []),
+                    ...(currentTopic?.notes ? ['notes'] : []),
+                    ...(currentTopic?.terms_defs ? ['terms_defs'] : []),
                     ...currentTopic?.lessons ? currentTopic.lessons : []
                 ];
             };
@@ -225,8 +225,8 @@ export default function Units() {
 
                 if (nextTopic) {
                     setCurrentTopic(nextTopic);
-                    setCurrentSubTopic(nextTopic.notes?.length ? 'notes' : nextTopic.terms_defs?.length ? 'terms_defs' : nextTopic.lessons[0]);
-                    setCurrentSubTopicType(nextTopic.notes?.length ? 'Notes' : nextTopic.terms_defs?.length ? 'Terms/Definitions' : 'Lesson');
+                    setCurrentSubTopic(nextTopic.notes ? 'notes' : nextTopic.terms_defs ? 'terms_defs' : nextTopic.lessons[0]);
+                    setCurrentSubTopicType(nextTopic.notes ? 'Notes' : nextTopic.terms_defs ? 'Terms/Definitions' : 'Lesson');
                     setDisplaySubTopicContent(true);
                 } else {
                     setDisplaySubTopicContent(false);
@@ -352,18 +352,15 @@ export default function Units() {
                                             <li key={topic.id} className={`topic-item ${currentTopic === topic ? 'current-topic-item' : ''}`} onClick={(e) => toggleSubtopicDropdown(e, topic)}>
                                                 {topic.name}
                                                 <span className="sub-topic-total-index">
-                                                    {(topic?.lessons ? topic.lessons.length : 0) + (topic.notes ? 1 : 0) + (topic.terms_defs ? 1 : 0)}
+                                                    {(topic?.lessons ? topic.lessons.length : 0) + 2}
                                                 </span>
                                             </li>
 
                                             {currentTopic?.unique_string_id === topic.unique_string_id && (
                                                 <ul className="topic-dropdown">
-                                                    {currentTopic?.notes?.length > 0 && (
-                                                        <li className={`sub-topic-item ${currentSubTopic === 'notes' ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, 'notes')}>Notes</li>
-                                                    )}
-                                                    {currentTopic?.terms_defs?.length > 0 && (
-                                                        <li className={`sub-topic-item ${currentSubTopic === 'terms_defs' ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, 'terms_defs')}>Term/Definitions</li>
-                                                    )}
+                                                    <li className={`sub-topic-item ${currentSubTopic === 'notes' ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, 'notes')}>Notes</li>
+                                                    <li className={`sub-topic-item ${currentSubTopic === 'terms_defs' ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, 'terms_defs')}>Term/Definitions</li>
+                                                    
                                                     {currentTopic?.lessons?.length > 0 && (
                                                         <>
                                                             {currentTopic.lessons.map((lesson, index) => (
