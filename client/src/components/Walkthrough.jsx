@@ -5,7 +5,6 @@ import '../styles/Walkthrough.css';
 
 export default function Walkthrough({
     walkthroughData,
-    setWalkthroughData,
     setWalkthrough,
     setHiddenWalkthrough
 }) {
@@ -18,9 +17,9 @@ export default function Walkthrough({
 
     useEffect(() => {
         setCurrentStep(
-            walkthroughData.steps.find((step) => step.index === currentStepIndex)
+            walkthroughData?.steps?.find((step) => step.index === currentStepIndex)
         );
-    }, [currentStepIndex, walkthroughData.steps]);
+    }, [currentStepIndex, walkthroughData.steps, walkthroughData]);
     
     useEffect(() => {
         if (focusedElement) {
@@ -75,7 +74,7 @@ export default function Walkthrough({
     
 
     useEffect(() => {
-        setTotalSteps(walkthroughData.steps.length);
+        setTotalSteps(walkthroughData?.steps?.length);
     }, [walkthroughData]);
 
     const stepChange = (type) => {
@@ -91,7 +90,6 @@ export default function Walkthrough({
             setCurrentStepIndex(1);
             setCurrentStep(null);
             setTotalSteps(1);
-            setWalkthroughData({});
             document.body.classList.remove("modal-open");
             setWalkthrough(false);
         };

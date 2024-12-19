@@ -1,4 +1,6 @@
 import { useEffect, useState, useContext } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { FetchContext } from "../context/FetchProvider.jsx";
 import PageTitle from "../components/PageTitle.jsx";
 import LoadingScreen from "../components/LoadingScreen.jsx";
@@ -13,12 +15,44 @@ export default function Subjects() {
     const { fetchWithRetry } = useContext(FetchContext);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
-    
+
     const initialHiddenState = JSON.parse(localStorage.getItem("hiddenWalkthrough")) || [];
     const isHidden = initialHiddenState.includes("subjects");
     const [hiddenWalkthrough, setHiddenWalkthrough] = useState(isHidden);
     const [walkthrough, setWalkthrough] = useState(false);
-    const [walkthroughData, setWalkthroughData] = useState({});
+    const walkthroughData = ({
+        page: "subjects",
+        steps: [
+            {
+                index: 1,
+                title: "Welcome to the 'Subjects' Page!",
+                instruction: "Here's a quick walkthrough we've put together to help you get started! (p.s: you can click the 'x' if you don't want to hear it!)",
+                focusedElement: null,
+                assets: ["https://i.ibb.co/cTZkxJR/Code-Path-Study-Go-v3-Walkthrough.gif"]
+            },
+            {
+                index: 2,
+                title: "Search and Filters",
+                instruction: "On your left, you have your search and filters. Search for a subject or filter how the subjects are sorted!",
+                focusedElement: "subjects-filter-holder",
+                assets: []
+            },
+            {
+                index: 3,
+                title: "View all Subjects",
+                instruction: "On your right, you have a view of all subjects currently on StudyGo! Select a subject to view the top five classes with the most content, or select (all ___ classes) to view them all!",
+                focusedElement: "subjects-section",
+                assets: []
+            },
+            {
+                index: 4,
+                title: "Happy Studying!",
+                instruction: "That's it for this walkthrough so we'll turn you loose! Enjoy your time here and study hard!",
+                focusedElement: null,
+                assets: []
+            }
+        ]
+    });
 
     const [subjects, setSubjects] = useState([]);
     const [classes, setClasses] = useState([]);
@@ -54,7 +88,7 @@ export default function Subjects() {
             setOpenNewClassModal(false);
             fetchSubjects();
             fetchClasses();
-        }
+        };
     };
 
     const toggleClassDropdown = async (e, subject) => {
@@ -110,58 +144,34 @@ export default function Subjects() {
         fetchClasses();
 
         if (!hiddenWalkthrough) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
             document.body.classList.add("modal-open");
             setWalkthrough(true);
-            setWalkthroughData({
-                page: "subjects",
-                steps: [
-                    {
-                        index: 1,
-                        title: "Welcome to the 'Subjects' Page!",
-                        instruction: "Here's a quick walkthrough we've put together to help you get started! (p.s: you can click the 'x' if you don't want to hear it!)",
-                        focusedElement: null,
-                        assets: ["https://i.ibb.co/cTZkxJR/Code-Path-Study-Go-v3-Walkthrough.gif"]
-                    },
-                    {
-                        index: 2,
-                        title: "Search and Filters",
-                        instruction: "On your left, you have your search and filters. Search for a subject or filter how the subjects are sorted!",
-                        focusedElement: "subjects-filter-holder",
-                        assets: []
-                    },
-                    {
-                        index: 3,
-                        title: "View all Subjects",
-                        instruction: "On your right, you have a view of all subjects currently on StudyGo! Select a subject to view the top five classes with the most content, or select (all ___ classes) to view them all!",
-                        focusedElement: "subjects-section",
-                        assets: []
-                    },
-                    {
-                        index: 4,
-                        title: "Happy Studying!",
-                        instruction: "That's it for this walkthrough so we'll turn you loose! Enjoy your time here and study hard!",
-                        focusedElement: null,
-                        assets: []
-                    }
-                ]
-            });
         } else {
             setWalkthrough(false);
             document.body.classList.remove("modal-open");
-            setWalkthroughData({});
         };
     }, []);
+
+    function startWalkthrough() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        document.body.classList.add("modal-open");
+        let hiddenWalkthrough = JSON.parse(localStorage.getItem("hiddenWalkthrough")) || [];
+        hiddenWalkthrough.pop("subjects");
+        localStorage.setItem("hiddenWalkthrough", JSON.stringify(hiddenWalkthrough));
+        setHiddenWalkthrough(false);
+        setWalkthrough(true);
+    };
 
     return (
         <>
             <PageTitle title="All Subjects | StudyGo" />
             {loading && <LoadingScreen />}
             {message && <MessagePopup message={message} setMessage={setMessage} />}
-            {walkthrough && 
-                <Walkthrough 
+            {walkthrough &&
+                <Walkthrough
                     walkthroughData={walkthroughData}
                     setWalkthrough={setWalkthrough}
-                    setWalkthroughData={setWalkthroughData}
                     setHiddenWalkthrough={setHiddenWalkthrough}
                 />
             }
@@ -264,6 +274,10 @@ export default function Subjects() {
                     </ul>
                 </section>
             </main>
+
+            <button type="button" id="start-walkthrough-button" title="Start Subjects Page Walkthrough" onClick={() => startWalkthrough()}>
+                <FontAwesomeIcon icon={faQuestion} />
+            </button>
 
             {openNewSubjectModal && (<NewSubjectModal toggleAddForm={toggleAddForm} />)}
             {openNewClassModal && (<NewClassModal subject={currentSubject} toggleAddForm={toggleAddForm} />)}
