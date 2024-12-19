@@ -26,9 +26,9 @@ export default function Subjects() {
             {
                 index: 1,
                 title: "Welcome to the 'Subjects' Page!",
-                instruction: "Here's a quick walkthrough we've put together to help you get started! (p.s: you can click the 'x' if you don't want to hear it!)",
+                instruction: "Here's a quick walkthrough we've put together to help you get started!",
                 focusedElement: null,
-                assets: ["https://i.ibb.co/cTZkxJR/Code-Path-Study-Go-v3-Walkthrough.gif"]
+                assets: ["https://i.ibb.co/bz0dYLT/Study-Go-Ani-Logo.gif"]
             },
             {
                 index: 2,
@@ -42,10 +42,17 @@ export default function Subjects() {
                 title: "View all Subjects",
                 instruction: "On your right, you have a view of all subjects currently on StudyGo! Select a subject to view the top five classes with the most content, or select (all ___ classes) to view them all!",
                 focusedElement: "subjects-section",
-                assets: []
+                assets: ["https://i.ibb.co/zs3Kv8b/click-card.gif"]
             },
             {
                 index: 4,
+                title: "Add Subjects",
+                instruction: "You can add a new subject by clicking the 'Add Subject' button at the top of the page!",
+                focusedElement: "add-subject-button",
+                assets: ["https://i.ibb.co/HFf1xyH/add-subject.gif"]
+            },
+            {
+                index: 5,
                 title: "Happy Studying!",
                 instruction: "That's it for this walkthrough so we'll turn you loose! Enjoy your time here and study hard!",
                 focusedElement: null,

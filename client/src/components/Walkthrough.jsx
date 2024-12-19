@@ -142,10 +142,11 @@ export default function Walkthrough({
                         <div className="walkthrough-assets">
                             {currentStep.assets.map((asset, index) => {
                                 const assetType = mediaTypes.get(asset.split(".").pop());
+                                index = index + 1;
                                 return (
                                     <>
                                         {assetType === "img" && (
-                                            <img className="walkthrough-asset" src={asset} alt={`Step ${currentStep?.title} asset ${index}`} />
+                                            <img className="walkthrough-asset" src={asset} alt={`Step '${currentStep?.title}' asset #${index}`} />
                                         )}
                                         {assetType === "video" && (
                                             <video className="walkthrough-asset" controls>
