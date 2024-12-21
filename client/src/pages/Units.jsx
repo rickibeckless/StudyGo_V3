@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FetchContext } from "../context/FetchProvider.jsx";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import LoadingScreen from "../components/LoadingScreen.jsx";
 import MessagePopup from "../components/MessagePopup.jsx";
 import PageTitle from "../components/PageTitle.jsx";
@@ -10,6 +10,7 @@ import UnitsHeader from "../components/unitsComponents/UnitsHeader.jsx";
 import UnitsBodyContent from "../components/unitsComponents/UnitsBodyContent.jsx";
 import OverviewOrSummary from "../components/unitsComponents/OverviewOrSummary.jsx";
 import Footer from "../components/Footer.jsx";
+import Walkthrough from "../components/Walkthrough.jsx";
 import '../styles/units.css';
 
 export default function Units() {
@@ -18,6 +19,66 @@ export default function Units() {
     const [message, setMessage] = useState("");
     const [styledMessage, setStyledMessage] = useState(false);
     const [confirmationAction, setConfirmationAction] = useState(null);
+
+    const initialHiddenState = JSON.parse(localStorage.getItem("hiddenWalkthrough")) || [];
+    const isHidden = initialHiddenState.includes("unit");
+    const [hiddenWalkthrough, setHiddenWalkthrough] = useState(isHidden);
+    const [walkthrough, setWalkthrough] = useState(false);
+    const walkthroughData = ({
+        page: "unit",
+        steps: [
+            {
+                index: 1,
+                title: "Welcome to the 'Unit' Page!",
+                instruction: "Here's a quick walkthrough we've put together to help you get started!",
+                focusedElement: null,
+                assets: ["https://i.ibb.co/bz0dYLT/Study-Go-Ani-Logo.gif"]
+            },
+            {
+                index: 2,
+                title: "Unit Navigation",
+                instruction: "Use the 'Unit Navigation' panel to navigate through the different topics and subtopics in the unit.",
+                focusedElement: "nav-sub-topic-btn-holder",
+                assets: ["https://i.ibb.co/zrpzq5Z/nav-buttons.gif"]
+            },
+            {
+                index: 3,
+                title: "Topic Content",
+                instruction: "Click on a topic to view its content. You can also add notes, terms and definitions to each topic.",
+                focusedElement: "topic-content",
+                assets: ["https://i.ibb.co/DDdccW6/side-nav.gif"]
+            },
+            {
+                index: 4,
+                title: "Notes",
+                instruction: "Add notes to a topic to help you remember important information.",
+                focusedElement: "topic-content",
+                assets: ["https://i.ibb.co/sJpJkNc/note-new.gif"]
+            },
+            {
+                index: 5,
+                title: "Terms & Definitions",
+                instruction: "Add terms and their definitions to a topic to help you remember key terms.",
+                focusedElement: "topic-content",
+                assets: ["https://i.ibb.co/m9DKc35/termdef-new.gif"]
+            },
+            {
+                index: 6,
+                title: "Lesson Content",
+                instruction: "View the lesson content for a topic.",
+                focusedElement: "topic-content",
+                assets: ["https://i.ibb.co/3W0FmsD/lesson.gif"]
+            },
+            {
+                index: 7,
+                title: "End of Walkthrough",
+                instruction: "That's the end of the walkthrough! If you need help, select the button with a '?' at the bottom left of your screen!",
+                focusedElement: null,
+                assets: ["https://i.ibb.co/Qr82K0P/help.gif"]
+            }
+        ]
+    });
+
     const navigate = useNavigate();
 
     const { subjectId, classId, unitId } = useParams();
@@ -37,6 +98,17 @@ export default function Units() {
     const [openSubtopicDropdown, setOpenSubtopicDropdown] = useState(false);
     const [displaySubTopicContent, setDisplaySubTopicContent] = useState(false);
     const [contentType, setContentType] = useState("overview");
+
+    useEffect(() => {
+        if (!hiddenWalkthrough) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            document.body.classList.add("modal-open");
+            setWalkthrough(true);
+        } else {
+            setWalkthrough(false);
+            document.body.classList.remove("modal-open");
+        };
+    }, []);
 
     const toggleSubtopicDropdown = (e, topic) => {
         e.stopPropagation();
@@ -326,11 +398,28 @@ export default function Units() {
         setCurrentTopic('overview');
     }, [loading, subjectId, classId, unitId]);
 
+    function startWalkthrough() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        document.body.classList.add("modal-open");
+        let hiddenWalkthrough = JSON.parse(localStorage.getItem("hiddenWalkthrough")) || [];
+        hiddenWalkthrough.pop("unit");
+        localStorage.setItem("hiddenWalkthrough", JSON.stringify(hiddenWalkthrough));
+        setHiddenWalkthrough(false);
+        setWalkthrough(true);
+    };
+
     return (
         <>
             {loading ? <LoadingScreen /> : null}
             {message && <MessagePopup message={message} setMessage={setMessage} styledMessage={styledMessage} confirmationAction={confirmationAction} />}
             <PageTitle title={`${unit.name} | StudyGo`} />
+            {walkthrough &&
+                <Walkthrough
+                    walkthroughData={walkthroughData}
+                    setWalkthrough={setWalkthrough}
+                    setHiddenWalkthrough={setHiddenWalkthrough}
+                />
+            }
 
             <div className="units-container">
                 <UnitsHeader subject={subject} cls={cls} unit={unit} />
@@ -345,7 +434,7 @@ export default function Units() {
                     <nav id="units-left-nav-topics">
                         <ul id="units-left-nav-topics-list">
                             <li className={`topic-item ${currentTopic === 'overview' ? 'current-topic-item' : ''}`} onClick={(e) => displayOverviewOrSummary(e, 'overview')}>Overview</li>
-                            <div className="topic-item-holder">
+                            <div className="topic-item-holder" id="topic-content">
                                 {topics.length > 0 ? (
                                     topics.map(topic => (
                                         <>
@@ -399,7 +488,7 @@ export default function Units() {
                             ) : null
                             }
 
-                            <li className="nav-sub-topic-btn-holder">
+                            <li id="nav-sub-topic-btn-holder">
                                 <button type="button" className="nav-sub-topic-btn" onClick={() => goToLastSubTopic()}>Back</button>
                                 <button type="button" className="nav-sub-topic-btn" onClick={() => goToNextSubTopic()}>Next</button>
                             </li>
@@ -420,6 +509,10 @@ export default function Units() {
                     </div>
                 </main>
             </div>
+
+            <button type="button" id="start-walkthrough-button" title="Start Unit Page Walkthrough" onClick={() => startWalkthrough()}>
+                <FontAwesomeIcon icon={faQuestion} />
+            </button>
         </>
     );
 };

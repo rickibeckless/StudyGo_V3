@@ -208,7 +208,7 @@
     color: #666666;
 }
 
-.nav-sub-topic-btn-holder {
+#nav-sub-topic-btn-holder {
     display: flex;
     flex-direction: row;
     align-items: center;

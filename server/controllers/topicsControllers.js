@@ -262,7 +262,6 @@ export const deleteTermDefFromTopic = async (req, res) => {
             let updatedDefinitions = [];
 
             termToEdit.definition.forEach(def => {
-                console.log(def);
                 if (def !== dataInfo.definition) {
                     updatedDefinitions.push(def);
                 }

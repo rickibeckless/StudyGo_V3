@@ -137,8 +137,8 @@ export default function UnitsBodyContent({ topic, currentSubTopic, refreshTopic 
                         definition: value
                     })
                 );
-            } else { 
-                setTermDefForm(params); 
+            } else {
+                setTermDefForm(params);
             };
         };
     };

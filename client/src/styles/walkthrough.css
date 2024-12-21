@@ -24,6 +24,7 @@
 
 .walkthrough-focused-element {
     z-index: 1001;
+    padding: 1%;
 }
 
 .walkthrough #walkthrough-content {
