@@ -12,10 +12,17 @@
     background-color: #d82525;
 }
 
-input.add-sub-topic-input {
+input.add-sub-topic-input,
+textarea.add-sub-topic-input {
     margin-bottom: 0;
     padding: 0.5rem;
     color: #555555;
+}
+
+textarea.add-sub-topic-input {
+    resize: vertical;
+    min-height: 4rem;
+    max-height: 10rem;
 }
 
 .star-btn {

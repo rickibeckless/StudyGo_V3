@@ -62,10 +62,8 @@ export const addNoteToTopic = async (req, res) => {
         const { topicId } = req.params;
         const { note } = req.body;
 
-        console.log(topicId, note);
-
         const results = await pool.query(
-            'UPDATE topics SET notes = notes || $1::jsonb WHERE unique_string_id = $2 RETURNING *',
+            'UPDATE topics SET notes = COALESCE(notes, \'[]\'::jsonb) || $1::jsonb WHERE unique_string_id = $2 RETURNING *',
             [JSON.stringify(note), topicId]
         );
 
@@ -91,7 +89,7 @@ export const updateNoteFromTopic = async (req, res) => {
         const notes = fetchResult.rows[0].notes;
 
         const updatedNotes = notes.map((note) =>
-            note.text === oldNote.text ? newNote : note
+            note.unique_string_id === oldNote.unique_string_id ? newNote : note
         );
 
         const updateQuery = `
@@ -123,7 +121,7 @@ export const starNoteFromTopic = async (req, res) => {
 
         const notes = fetchResult.rows[0].notes;
         const updatedNotes = notes.map((n) =>
-            n.text === note.text ? { ...n, starred: !n.starred } : n
+            n.unique_string_id === note.unique_string_id ? { ...n, starred: !n.starred } : n
         );
         const updateQuery = `
             UPDATE topics
@@ -143,7 +141,7 @@ export const starNoteFromTopic = async (req, res) => {
 export const deleteNoteFromTopic = async (req, res) => {
     try {
         const { topicId } = req.params;
-        const { note } = req.body;
+        const { dataInfo } = req.body;
 
         const fetchQuery = `SELECT notes FROM topics WHERE unique_string_id = $1`;
         const fetchResult = await pool.query(fetchQuery, [topicId]);
@@ -153,7 +151,7 @@ export const deleteNoteFromTopic = async (req, res) => {
         };
 
         const notes = fetchResult.rows[0].notes;
-        const updatedNotes = notes.filter(n => n.text !== note.text);
+        const updatedNotes = notes.filter(n => n.unique_string_id !== dataInfo.unique_string_id);
         const updateQuery = `
             UPDATE topics
             SET notes = $1
@@ -180,7 +178,7 @@ export const addTermDefToTopic = async (req, res) => {
         const { termdef } = req.body;
 
         const results = await pool.query(
-            'UPDATE topics SET terms_defs = terms_defs || $1::text WHERE unique_string_id = $2 RETURNING *',
+            'UPDATE topics SET terms_defs = COALESCE(terms_defs, \'[]\'::jsonb) || $1::jsonb WHERE unique_string_id = $2 RETURNING *',
             [termdef, topicId]
         );
 
@@ -188,57 +186,115 @@ export const addTermDefToTopic = async (req, res) => {
     } catch (error) {
         console.error('Error adding term/definition to topic:', error);
         res.status(500).json({ message: 'Error adding term/definition to topic', error });
-    }
+    };
 };
 
 export const updateTermDefFromTopic = async (req, res) => {
     try {
         const { topicId } = req.params;
         const { termdef } = req.body;
+        let isExistingEdit = false;
 
-        const query = `
-            UPDATE topics 
-            SET terms_defs = array_remove(terms_defs, $1) 
-            WHERE unique_string_id = $2
-            RETURNING *;
-        `;
+        if (termdef.originaldef) isExistingEdit = true;
 
-        const results = await pool.query(query, [termdef, topicId]);
+        const terms_defs = await pool.query('SELECT terms_defs FROM topics WHERE unique_string_id = $1', [topicId]);
+        const terms_defsResults = terms_defs.rows[0].terms_defs;
+        const termToUpdate = terms_defsResults.find(item => item.unique_string_id === termdef.termid);
 
-        if (results.rowCount === 0) {
-            return res.status(404).json({ message: 'Topic or term/definition not found' });
-        }
+        if (!termToUpdate) {
+            return res.status(404).json({ message: 'Term not found' });
+        };
+
+        let updatedTerm;
+        let updatedTermsDefs;
+
+        if (isExistingEdit) {
+            const updatedDefinitions = termToUpdate.definition.map(def =>
+                def === termdef.originaldef ? termdef.definition : def
+            );
+
+            updatedTerm = {
+                ...termToUpdate,
+                definition: updatedDefinitions
+            };
+
+            updatedTermsDefs = terms_defsResults.map(item =>
+                item.unique_string_id === termdef.termid ? updatedTerm : item
+            );
+        } else {
+            updatedTerm = {
+                ...termToUpdate,
+                definition: [...termToUpdate.definition, ...termdef.definition]
+            };
+
+            updatedTermsDefs = terms_defsResults.map(item =>
+                item.unique_string_id === termdef.termid ? updatedTerm : item
+            );
+        };
+        
+        const results = await pool.query(
+            'UPDATE topics SET terms_defs = $1 WHERE unique_string_id = $2 RETURNING *',
+            [JSON.stringify(updatedTermsDefs), topicId]
+        );
 
         res.status(200).json(results.rows);
     } catch (error) {
         console.error('Error updating term/definition from topic:', error);
         res.status(500).json({ message: 'Error updating term/definition from topic', error });
-    }
+    };
 };
 
 export const deleteTermDefFromTopic = async (req, res) => {
     try {
         const { topicId } = req.params;
-        const { termdef } = req.body;
+        const { dataInfo } = req.body;
+        
+        let results;
+        const terms_defs = await pool.query('SELECT terms_defs FROM topics WHERE unique_string_id = $1', [topicId]);
+        const terms_defsResults = terms_defs.rows[0].terms_defs;
+        const termToEdit = terms_defsResults.find(item => item.unique_string_id === dataInfo.termid);
 
-        const query = `
-            UPDATE topics
-            SET terms_defs = array_remove(terms_defs, $1)
-            WHERE unique_string_id = $2
-            RETURNING *;
-        `;
+        if (!termToEdit) {
+            return res.status(404).json({ message: 'Term not found' });
+        };
 
-        const results = await pool.query(query, [termdef, topicId]);
+        if (dataInfo.definition) {
+            let updatedDefinitions = [];
 
-        if (results.rowCount === 0) {
-            return res.status(404).json({ message: 'Topic or term/definition not found' });
-        }
+            termToEdit.definition.forEach(def => {
+                console.log(def);
+                if (def !== dataInfo.definition) {
+                    updatedDefinitions.push(def);
+                }
+            });
+
+            const updatedTerm = {
+                ...termToEdit,
+                definition: updatedDefinitions
+            };
+
+            const updatedTermsDefs = terms_defsResults.map(item =>
+                item.unique_string_id === dataInfo.termid ? updatedTerm : item
+            );
+
+            results = await pool.query(
+                'UPDATE topics SET terms_defs = $1 WHERE unique_string_id = $2 RETURNING *',
+                [JSON.stringify(updatedTermsDefs), topicId]
+            );
+        } else if (!dataInfo.definition) {
+            const updatedTermsDefs = terms_defsResults.filter(item => item.unique_string_id !== dataInfo.termid);
+
+            results = await pool.query(
+                'UPDATE topics SET terms_defs = $1 WHERE unique_string_id = $2 RETURNING *',
+                [JSON.stringify(updatedTermsDefs), topicId]
+            );
+        };
 
         res.status(200).json(results.rows);
     } catch (error) {
         console.error('Error deleting term/definition from topic:', error);
         res.status(500).json({ message: 'Error deleting term/definition from topic', error });
-    }
+    };
 };
 
 // Lesson Controllers
