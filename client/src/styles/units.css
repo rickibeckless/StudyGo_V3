@@ -211,16 +211,15 @@
 .nav-sub-topic-btn-holder {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     align-items: center;
     margin-left: auto;
     justify-content: flex-end;
-    gap: 0.5rem;
+    gap: .5rem;
 }
 
 .nav-sub-topic-btn {
     font-size: .85rem;
-    padding: 0.5rem 1rem;
+    padding: .5rem 1rem;
 }
 
 #custom-right-nav-border {
@@ -572,8 +571,6 @@
         "left-nav main-body"
     ;
 
-    /* min-height: 100dvh;
-    min-width: 100vw; */
     background-color: #f9f9f9;
 }
 

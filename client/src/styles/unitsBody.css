@@ -57,10 +57,6 @@ textarea.add-sub-topic-input {
     height: 100%;
 }
 
-.add-note-input {
-
-}
-
 .add-note-btn {
     margin-left: auto;
     position: absolute;
@@ -79,12 +75,7 @@ textarea.add-sub-topic-input {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.term-def-btn {
-
+    gap: .5rem;
 }
 
 #delete-term-def-btn {
@@ -94,24 +85,6 @@ textarea.add-sub-topic-input {
     transform: rotate(-15deg);
 }
 
-#delete-def-btn {
-
-}
-
 .definition-holder .definition:last-of-type {
     margin-bottom: 0;
 }
-
-#add-def-btn {
-    /* position: absolute;
-    bottom: -0.3rem;
-    right: -0.3rem;
-    transform: rotate(15deg); */
-}
-
-#add-term-btn {
-
-}
-
-/* Lesson Styles */
-

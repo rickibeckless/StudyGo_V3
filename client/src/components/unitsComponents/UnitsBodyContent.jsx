@@ -179,25 +179,27 @@ export default function UnitsBodyContent({ topic, currentSubTopic, refreshTopic 
             const data = await res.json();
 
             if (res.ok) {
+                if (type === "note") {
+                    setNoteForm({ text: '', starred: false });
+                    setEditNoteForm({ text: '', starred: false });
+                    setIsEditing(false);
+                    setEditCurrentNote(false);
+                    setNoteToEdit(null);
+
+                    setMessage(isEditing ? "Note updated successfully" : "Note added successfully");
+                } else if (type === "termdef") {
+                    setTermDefForm({ term: '', definition: [] });
+                    setEditTermDefForm({ termid: '', definition: [] });
+                    setIsEditingTermDef(false);
+                    setEditCurrentTermDef(false);
+                    setTermDefToEdit(null);
+
+                    setMessage(isEditingTermDef ? "Term and definition updated successfully" : "Term and definition added successfully");
+                };
+
                 refreshTopic();
-                if (type === "note") setMessage(isEditing ? "Note updated successfully" : "Note added successfully");
-                if (type === "termdef") setMessage(isEditingTermDef ? "Term and definition updated successfully" : "Term and definition added successfully");
             } else {
                 setMessage(data.message);
-            };
-
-            if (type === "note") {
-                setNoteForm({ text: '', starred: false });
-                setEditNoteForm({ text: '', starred: false });
-                setIsEditing(false);
-                setEditCurrentNote(false);
-                setNoteToEdit(null);
-            } else if (type === "termdef") {
-                setTermDefForm({ term: '', definition: [] });
-                setEditTermDefForm({ termid: '', definition: [] });
-                setIsEditingTermDef(false);
-                setEditCurrentTermDef(false);
-                setTermDefToEdit(null);
             };
         } catch (error) {
             setMessage(error.message);
@@ -205,7 +207,6 @@ export default function UnitsBodyContent({ topic, currentSubTopic, refreshTopic 
     };
 
     const sanitizedHTML = DOMPurify.sanitize(currentSubTopic?.lesson_content);
-    //console.log(termDefToEdit);
 
     return (
         <>
@@ -354,7 +355,11 @@ export default function UnitsBodyContent({ topic, currentSubTopic, refreshTopic 
                                     </li>
                                 )}
                                 <li className="definition">
-                                    <input type="text" className="add-sub-topic-input" placeholder={`New Definition for '${term_def.term}'`} name="definition" data-termid={`${term_def.unique_string_id}`} onChange={(e) => handleChange(e, 'termdef', 'update')} />
+                                    {editTermDefForm.termid === term_def.unique_string_id ? (
+                                        <input type="text" className="add-sub-topic-input" placeholder={`New Definition for '${term_def.term}'`} name="definition" data-termid={`${term_def.unique_string_id}`} value={editTermDefForm.definition || ''} onChange={(e) => handleChange(e, 'termdef', 'update')} />
+                                    ) : (
+                                        <input type="text" className="add-sub-topic-input" placeholder={`New Definition for '${term_def.term}'`} name="definition" data-termid={`${term_def.unique_string_id}`} value='' onChange={(e) => handleChange(e, 'termdef', 'update')} />
+                                    )}
                                     <button className="sub-topic-btn add-sub-topic-btn term-def-btn" id="add-def-btn" type="button" onClick={(e) => handleSubmit(e, "termdef", "update")}>
                                         <FontAwesomeIcon icon={faPlus} />
                                     </button>
