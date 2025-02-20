@@ -4,7 +4,8 @@ import {
     addUnit, getUnitsByClassId, 
     getUnitById, 
     updateUnitStatus, 
-    getTopicById 
+    getTopicById,
+    deleteUnit
 } from '../controllers/unitsControllers.js';
 
 const router = express.Router();
@@ -17,5 +18,7 @@ router.get('/:subjectId/:classId', getUnitsByClassId);
 router.get('/:subjectId/:classId/:unitId', getUnitById);
 router.patch('/:subjectId/:classId/:unitId/status', updateUnitStatus);
 router.get('/:subjectId/:classId/:unitId/:topicId', getTopicById);
+
+router.delete('/:unitId/delete', deleteUnit);
 
 export default router;

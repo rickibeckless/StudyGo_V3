@@ -190,12 +190,13 @@ input[type="checkbox"]:focus + .custom-checkbox {
     display: flex;
     flex-direction: column;
     /* justify-content: space-between; */
+    position: relative;
 
     background-color: #ffffff;
     border-radius: 0.5rem;
     box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
-    overflow: auto;
+    overflow: hidden;
     cursor: pointer;
 
     height: 50vh;
@@ -252,9 +253,10 @@ input[type="checkbox"]:focus + .custom-checkbox {
     
     background-color: #ffffff;
     
-    position: sticky;
+    position: absolute;
     bottom: 0;
     padding: 1rem;
+    width: 100%;
 }
 
 .subject-class-count {
@@ -269,7 +271,8 @@ input[type="checkbox"]:focus + .custom-checkbox {
 
 .class-holder {
     list-style-type: none;
-    /* height: 100%; */
+    height: calc(100% - 10rem);
+    overflow: auto;
 }
 
 .class-holder li {

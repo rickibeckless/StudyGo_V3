@@ -22,13 +22,15 @@ export const getTopicsByUnitId = async (req, res) => {
 
 export const addTopic = async (req, res) => {
     try {
-        const { subjectId, classId, unitId } = req.params;
-        const { name, description, topic_index } = req.body;
+        const { unitId } = req.params;
+        const { subjectId, classId, name, description, topic_index } = req.body;
 
         const results = await pool.query(
             'INSERT INTO topics (subjectid, classid, unitid, name, description, topic_index) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
             [subjectId, classId, unitId, name, description, topic_index]
         );
+
+        await pool.query('UPDATE units SET date_updated = NOW() WHERE unique_string_id = $1 RETURNING *', [unitId]);
 
         res.status(200).json(results.rows);
     } catch (error) {
@@ -39,13 +41,17 @@ export const addTopic = async (req, res) => {
 
 export const deleteTopic = async (req, res) => {
     try {
-        const { subjectId, classId, unitId } = req.params;
+        const { topicId } = req.params;
 
-        const results = await pool.query('DELETE FROM topics WHERE subjectid = $1 AND classid = $2 AND unitid = $3 RETURNING *', [subjectId, classId, unitId]);
+        const results = await pool.query('DELETE FROM topics WHERE unique_string_id = $1 RETURNING *', [topicId]);
 
         if (results.rowCount === 0) {
             return res.status(404).json({ message: 'Topic not found' });
         }
+
+        const unitId = results.rows[0].unitid;
+
+        await pool.query('UPDATE units SET date_updated = NOW() WHERE unique_string_id = $1 RETURNING *', [unitId]);
 
         res.status(200).json(results.rows);
     } catch (error) {
@@ -66,6 +72,8 @@ export const addNoteToTopic = async (req, res) => {
             'UPDATE topics SET notes = COALESCE(notes, \'[]\'::jsonb) || $1::jsonb WHERE unique_string_id = $2 RETURNING *',
             [JSON.stringify(note), topicId]
         );
+
+        await pool.query('UPDATE topics SET date_updated = NOW() WHERE unique_string_id = $1 RETURNING *', [topicId]);
 
         res.status(201).json(results.rows);
     } catch (error) {
@@ -100,6 +108,8 @@ export const updateNoteFromTopic = async (req, res) => {
         `;
         const updateResult = await pool.query(updateQuery, [JSON.stringify(updatedNotes), topicId]);
 
+        await pool.query('UPDATE topics SET date_updated = NOW() WHERE unique_string_id = $1 RETURNING *', [topicId]);
+
         res.status(200).json(updateResult.rows);
     } catch (error) {
         console.error('Error updating note from topic:', error);
@@ -130,6 +140,8 @@ export const starNoteFromTopic = async (req, res) => {
             RETURNING *;
         `;
         const updateResult = await pool.query(updateQuery, [JSON.stringify(updatedNotes), topicId]);
+
+        await pool.query('UPDATE topics SET date_updated = NOW() WHERE unique_string_id = $1 RETURNING *', [topicId]);
 
         res.status(200).json(updateResult.rows);
     } catch (error) {
@@ -164,6 +176,8 @@ export const deleteNoteFromTopic = async (req, res) => {
             return res.status(404).json({ message: 'Topic or note not found' });
         };
 
+        await pool.query('UPDATE topics SET date_updated = NOW() WHERE unique_string_id = $1 RETURNING *', [topicId]);
+
         res.status(200).json(updateResult.rows);
     } catch (error) {
         console.error('Error deleting note from topic:', error);
@@ -181,6 +195,8 @@ export const addTermDefToTopic = async (req, res) => {
             'UPDATE topics SET terms_defs = COALESCE(terms_defs, \'[]\'::jsonb) || $1::jsonb WHERE unique_string_id = $2 RETURNING *',
             [termdef, topicId]
         );
+
+        await pool.query('UPDATE topics SET date_updated = NOW() WHERE unique_string_id = $1 RETURNING *', [topicId]);
 
         res.status(201).json(results.rows);
     } catch (error) {
@@ -237,6 +253,8 @@ export const updateTermDefFromTopic = async (req, res) => {
             [JSON.stringify(updatedTermsDefs), topicId]
         );
 
+        await pool.query('UPDATE topics SET date_updated = NOW() WHERE unique_string_id = $1 RETURNING *', [topicId]);
+
         res.status(200).json(results.rows);
     } catch (error) {
         console.error('Error updating term/definition from topic:', error);
@@ -289,6 +307,8 @@ export const deleteTermDefFromTopic = async (req, res) => {
             );
         };
 
+        await pool.query('UPDATE topics SET date_updated = NOW() WHERE unique_string_id = $1 RETURNING *', [topicId]);
+
         res.status(200).json(results.rows);
     } catch (error) {
         console.error('Error deleting term/definition from topic:', error);
@@ -306,6 +326,8 @@ export const addLessonToTopic = async (req, res) => {
             'UPDATE topics SET lessons = COALESCE(lessons, \'[]\'::jsonb) || $1::jsonb WHERE unique_string_id = $2 RETURNING *',
             [JSON.stringify(lesson), topicId]
         );
+
+        await pool.query('UPDATE topics SET date_updated = NOW() WHERE unique_string_id = $1 RETURNING *', [topicId]);
 
         res.status(201).json(results.rows);
     } catch (error) {
@@ -336,6 +358,8 @@ export const updateLessonFromTopic = async (req, res) => {
             return res.status(404).json({ message: 'Topic or lesson not found' });
         }
 
+        await pool.query('UPDATE topics SET date_updated = NOW() WHERE unique_string_id = $1 RETURNING *', [topicId]);
+
         res.status(200).json(results.rows);
     } catch (error) {
         console.error('Error updating lesson from topic:', error);
@@ -364,6 +388,8 @@ export const deleteLessonFromTopic = async (req, res) => {
         if (results.rowCount === 0) {
             return res.status(404).json({ message: 'Topic or lesson not found' });
         }
+
+        await pool.query('UPDATE topics SET date_updated = NOW() WHERE unique_string_id = $1 RETURNING *', [topicId]);
 
         res.status(200).json(results.rows);
     } catch (error) {

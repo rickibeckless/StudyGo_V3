@@ -447,9 +447,6 @@ export default function Units() {
 
                                             {currentTopic?.unique_string_id === topic.unique_string_id && (
                                                 <ul className="topic-dropdown">
-                                                    <li className={`sub-topic-item ${currentSubTopic === 'notes' ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, 'notes')}>Notes</li>
-                                                    <li className={`sub-topic-item ${currentSubTopic === 'terms_defs' ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, 'terms_defs')}>Term/Definitions</li>
-                                                    
                                                     {currentTopic?.lessons?.length > 0 && (
                                                         <>
                                                             {currentTopic.lessons.map((lesson, index) => (
@@ -457,6 +454,9 @@ export default function Units() {
                                                             ))}
                                                         </>
                                                     )}
+                                                    
+                                                    <li className={`sub-topic-item ${currentSubTopic === 'notes' ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, 'notes')}>Notes</li>
+                                                    <li className={`sub-topic-item ${currentSubTopic === 'terms_defs' ? 'current-sub-topic' : ''}`} onClick={(e) => openSubTopic(e, currentTopic, 'terms_defs')}>Term/Definitions</li>
                                                 </ul>
                                             )}
                                         </>

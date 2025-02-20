@@ -1,5 +1,4 @@
 import { pool } from '../config/database.js';
-import { generateUniqueStringId, getAllUniqueIds } from '../data/allUniqueIds.js';
 
 export const getUnits = async (req, res) => {
     try {
@@ -33,6 +32,8 @@ export const addUnit = async (req, res) => {
             'INSERT INTO units (subjectid, classid, name, description, learning_objectives, unit_outcomes, prerequisites, unit_index) VALUES ($1, $2, $3, $4, $5::text[], $6, $7, $8) RETURNING *', 
             [subjectId, classId, name, description, learning_objectives, unit_outcomes, prerequisites, unit_index]
         );
+
+        await pool.query('UPDATE classes SET date_updated = NOW() WHERE unique_string_id = $1', [classId]);
 
         res.status(201).json(results.rows);
     } catch (error) {
@@ -79,5 +80,25 @@ export const getTopicById = async (req, res) => {
     } catch (error) {
         console.error('Error fetching topic by ID:', error);
         res.status(500).json({ message: 'Error fetching topic by ID', error });
+    };
+};
+
+export const deleteUnit = async (req, res) => {
+    try {
+        const { unitId } = req.params;
+
+        const unitExists = await pool.query('SELECT * FROM units WHERE unique_string_id = $1', [unitId]);
+
+        if (unitExists.rows.length === 0) {
+            return res.status(404).json({ message: 'Unit not found' });
+        };
+        await pool.query('UPDATE classes SET date_updated = NOW() WHERE unique_string_id = $1', [unitExists.classid]);
+
+        const results = await pool.query('DELETE FROM units WHERE unique_string_id = $1 RETURNING *', [unitId]);
+
+        res.status(200).json(results.rows);
+    } catch (error) {
+        console.error('Error deleting topic by ID:', error);
+        res.status(500).json({ message: 'Error deleting topic by ID', error });
     };
 };

@@ -1,0 +1,64 @@
+/* new event modal styles */
+#new-event-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2001;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px #00000026;
+
+    padding: 2rem;
+
+    width: 40vw;
+    height: 85dvh;
+
+    overflow: auto;
+}
+
+#new-event-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    height: 100%;
+    max-height: 100%;
+    overflow: auto;
+    margin: 1rem 0;
+}
+
+.new-event-form-page {
+    max-height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    row-gap: 1rem;
+}
+
+.new-event-form-button-holder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10rem;
+}
+
+.new-event-nav-button#modalCloseButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+}
+
+.new-event-nav-button.disabled {
+    cursor: not-allowed;
+    background-color: #7ca1be;
+}

@@ -22,8 +22,8 @@ const router = express.Router();
 
 router.get('/', getTopics);
 router.get('/:unitId', getTopicsByUnitId);
-router.post('/:subjectId/:classId/:unitId/new', addTopic);
-router.delete('/:subjectId/:classId/:unitId/delete', deleteTopic);
+router.post('/:unitId/new', addTopic);
+router.delete('/:topicId/delete', deleteTopic);
 
 // note routes
 router.patch('/:subjectId/:classId/:unitId/:topicId/new/note', addNoteToTopic);

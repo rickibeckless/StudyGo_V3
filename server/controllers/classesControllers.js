@@ -112,3 +112,19 @@ export const getUnitsById = async (req, res) => {
         res.status(500).json({ error: 'An unexpected error occurred' });
     };
 };
+
+export const deleteClassById = async (req, res) => {
+    try {
+        const { classId } = req.params;
+        const classExists = await pool.query('SELECT * FROM classes WHERE unique_string_id = $1', [classId]);
+        if (classExists.rows.length === 0) {
+            return res.status(404).json({ error: 'Class not found' });
+        };
+
+        await pool.query('DELETE FROM classes WHERE unique_string_id = $1', [classId]);
+        res.status(200).json({ message: 'Class deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting class by ID:', error);
+        res.status(500).json({ error: 'An unexpected error occurred' });
+    };
+};

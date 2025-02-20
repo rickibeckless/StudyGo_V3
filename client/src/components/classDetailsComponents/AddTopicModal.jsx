@@ -13,6 +13,8 @@ export default function AddTopicModal({ toggleAddForm, unit }) {
     const [usedIndexes, setUsedIndexes] = useState([]);
     const [invalidFields, setInvalidFields] = useState({});
     const [topicForm, setTopicForm] = useState({
+        subjectId: unit.subjectid,
+        classId: unit.classid,
         name: "",
         description: "",
         topic_index: null,
@@ -65,7 +67,7 @@ export default function AddTopicModal({ toggleAddForm, unit }) {
         };
 
         try {
-            const res = await fetch(`/api/topics/${unit.subjectid}/${unit.classid}/${unit.unique_string_id}/new`, {
+            const res = await fetch(`/api/topics/${unit.unique_string_id}/new`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

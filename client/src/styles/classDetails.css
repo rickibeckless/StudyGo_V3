@@ -117,7 +117,8 @@
 }
 
 .add-button-holder .add-lesson-button,
-.add-button-holder .delete-unit-button {
+.add-button-holder .delete-unit-button,
+.delete-topic-button {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -130,17 +131,28 @@
     top: 0;
 }
 
-.add-button-holder .delete-unit-button {
+.add-button-holder .delete-lesson-button {
     position: absolute;
     left: 0;
     top: 0;
 
-    padding: .2rem .5rem;
+}
+
+.add-button-holder .delete-unit-button {
+    position: absolute;
+    left: 0;
+    top: 0;
     font-size: 1.2rem;
+    padding: .2rem .5rem;
+}
+
+.add-button-holder .delete-unit-button,
+.delete-topic-button {
     background-color: #ff0000;
 }
 
-.add-button-holder .delete-unit-button:hover {
+.add-button-holder .delete-unit-button:hover,
+.delete-topic-button:hover {
     background-color: #d82525;
 }
 
@@ -158,6 +170,13 @@
 .topic-holder .topic-name:hover,
 .classes-lesson-holder .classes-lesson-name:hover {
     color: #0073e6;
+}
+
+.topic-holder .topic-name .topic-button-holder {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .topic-holder .topic-description {
@@ -215,6 +234,7 @@
     font-style: italic;
 }
 
+.delete-topic-button,
 .add-lesson-button,
 .delete-lesson-button {
     padding: 0.5rem 1rem;

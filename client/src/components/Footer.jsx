@@ -1,4 +1,6 @@
 export default function Footer() {
+    const year = new Date().getFullYear();
+
     return (
         <footer id="main-footer">
             <nav id="footer-navbar">
@@ -11,7 +13,7 @@ export default function Footer() {
                 </ul>
             </nav>
             <p id="footer-cr-statement">
-                Copyright &copy; 2024 <a id="footer-cr-link" href="https://github.com/rickibeckless" target="_blank" rel="noopener nofollow noreferrer" title="Ricki Beckless GitHub">Ricki Beckless</a>. All rights reserved.
+                Copyright &copy; {year} <a id="footer-cr-link" href="https://github.com/rickibeckless" target="_blank" rel="noopener nofollow noreferrer" title="Ricki Beckless GitHub">Ricki Beckless</a>. All rights reserved.
             </p>
         </footer>
     )

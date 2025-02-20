@@ -52,7 +52,11 @@ export default function SubjectPage({ subjectId }) {
 
     const fetchClasses = async () => {
         const classesRes = await fetch(`/api/classes/${subjectId}`);
-        const classesData = await classesRes.json();
+        let classesData = await classesRes.json();
+
+        console.log(classesData)
+        classesData.sort((a, b) => a.class_index - b.class_index);
+
         setClasses(classesData);
 
         classesData.forEach(cls => fetchUnits(cls.unique_string_id));
@@ -73,7 +77,9 @@ export default function SubjectPage({ subjectId }) {
 
     const fetchUnits = async (classId) => {
         const unitsRes = await fetch(`/api/units/${subjectId}/${classId}`);
-        const unitsData = await unitsRes.json();
+        let unitsData = await unitsRes.json();
+
+        unitsData.sort((a, b) => a.unit_index - b.unit_index);           // sorted units by index (02/03/2025)
 
         setUnitsByClass(prevState => ({
             ...prevState,
@@ -84,8 +90,10 @@ export default function SubjectPage({ subjectId }) {
     };
 
     const fetchTopics = async (classId, unitId) => {
-        const topicsRes = await fetch(`/api/topics/${subjectId}/${classId}/${unitId}`);
-        const topicsData = await topicsRes.json();
+        const topicsRes = await fetch(`/api/topics/${unitId}`);          // updated path to only use unitId (02/03/2025)
+        let topicsData = await topicsRes.json();
+
+        topicsData.sort((a, b) => a.topic_index - b.topic_index);        // sorted topics by index (02/03/2025)
 
         setTopicsByUnit(prevState => ({
             ...prevState,
