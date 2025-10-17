@@ -65,7 +65,12 @@ export default function GeneralClassesPage() {
     });
 
     const [classes, setClasses] = useState([]);
-    const [units, setUnits] = useState([]);
+    const [unitsByClass, setUnitsByClass] = useState({});
+    const [topicsByUnit, setTopicsByUnit] = useState({});
+    const [openClassFormModal, setOpenClassFormModal] = useState(false);
+    const [openUnitFormModal, setOpenUnitFormModal] = useState(false);
+    const [openClassId, setOpenClassId] = useState(null);
+    const [openUnitId, setOpenUnitId] = useState(null);
 
     useEffect(() => {
         async function fetchClasses() {
@@ -79,6 +84,7 @@ export default function GeneralClassesPage() {
                 };
 
                 setClasses(classesData);
+                classesData.forEach(cls => fetchUnits(cls.unique_string_id, cls.subjectid));
                 setLoading(false);
             } catch (error) {
                 setLoading(false);
@@ -89,8 +95,48 @@ export default function GeneralClassesPage() {
         fetchClasses();
     }, []);
 
+    const fetchUnits = async (classId, subjectId) => {
+        const unitsRes = await fetch(`/api/units/${subjectId}/${classId}`);
+        let unitsData = await unitsRes.json();
+
+        unitsData.sort((a, b) => a.unit_index - b.unit_index);
+
+        setUnitsByClass(prevState => ({
+            ...prevState,
+            [classId]: unitsData
+        }));
+
+        unitsData.forEach(unit => fetchTopics(classId, unit.unique_string_id));
+    };
+
+    const fetchTopics = async (classId, unitId) => {
+        const topicsRes = await fetch(`/api/topics/${unitId}`);
+        let topicsData = await topicsRes.json();
+
+        topicsData.sort((a, b) => a.topic_index - b.topic_index);
+
+        setTopicsByUnit(prevState => ({
+            ...prevState,
+            [unitId]: topicsData
+        }));
+    };
+
     const toggleAddForm = (type) => {
         console.log("Add form clicked");
+    };
+
+    const toggleUnitsDropdown = (e, classId) => {
+        e.stopPropagation();
+        setOpenClassId(openClassId === classId ? null : classId);
+    };
+
+    const toggleTopicsDropdown = (e, unitId) => {
+        e.stopPropagation();
+        setOpenUnitId(openUnitId === unitId ? null : unitId);
+    };
+
+    const truncateDescription = (text, maxLength = 300) => {
+        return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
     };
 
     return (
@@ -105,19 +151,76 @@ export default function GeneralClassesPage() {
             </div>
             <ul id="subject-list">
                 {classes?.map(cls => (
-                    <div className="subject-holder">
-                        <li className="subject" key={cls.unique_string_id}>{cls.name}</li>
+                    <div className="subject-holder" onClick={(e) => toggleUnitsDropdown(e, cls.unique_string_id)} key={cls.unique_string_id}>
+                        <li className="subject">
+                            {cls.name}
+                            <a href={`/${cls.subjectid}/${cls.unique_string_id}`} title={`${window.location.origin}/${cls.subjectid}/${cls.unique_string_id}`} className="view-all-classes-link">
+                                (all {cls.name} units →)
+                            </a>
+                        </li>
 
-                        <div className="subject-description">{cls.description}</div>
-                        
+                        {openClassId !== cls.unique_string_id ? (
+                            <div className="subject-description" >
+                                {truncateDescription(cls.description)}
+                            </div>
+                        ) : (
+                            <div className="class-holder">
+                                {unitsByClass[cls.unique_string_id] ? (
+                                    unitsByClass[cls.unique_string_id].length === 0 ? (
+                                        <li className="class">No Units Available!</li>
+                                    ) : (
+                                        unitsByClass[cls.unique_string_id]?.map(unit => (
+                                            <>
+                                                <li className="class" onClick={(e) => toggleTopicsDropdown(e, unit.unique_string_id)}>
+                                                    {unit.name}
+                                                </li>
+
+                                                {openUnitId === unit.unique_string_id && (
+                                                    <ul className="unit-dropdown">
+                                                        {topicsByUnit[unit.unique_string_id] ? (
+                                                            topicsByUnit[unit.unique_string_id].map(topic => (
+                                                                <li className="unit-item-holder" key={topic.unique_string_id} onClick={(e) => e.stopPropagation()}>
+                                                                    <a href={`/units/${unit.subjectid}/${unit.classid}/${unit.unique_string_id}`}
+                                                                        title={`${window.location.origin}/${unit.subjectid}/${unit.classid}/${unit.unique_string_id}`}
+                                                                        className="unit"
+                                                                    >
+                                                                        {topic.name}
+                                                                    </a>
+                                                                </li>
+                                                            ))
+                                                        ) : (
+                                                            <li className="unit-item-holder">
+                                                                <p className="unit">No topics available!</p>
+                                                            </li>
+                                                        )}
+                                                    </ul>
+                                                )}
+                                            </>
+                                        ))
+                                    )
+                                ) : (
+                                    <li className="class">No Units Available!</li>
+                                )}
+                            </div>
+                        )}
+
                         <div className="count-and-button-holder">
-                            <p className="subject-class-count">
-                                <span className="subject-class-count-number">
-
-                                </span>
-
-                            </p>
-                            <button className="add-class-button" title="Add a unit" onClick={() => toggleAddForm("unit")}>Add Unit</button>
+                            {unitsByClass[cls.unique_string_id] ? (
+                                unitsByClass[cls.unique_string_id].length === 1 ? (
+                                    <p className="subject-class-count">
+                                        <span className="subject-class-count-number">{unitsByClass[cls.unique_string_id].length}</span> unit
+                                    </p>
+                                ) : (
+                                    <p className="subject-class-count">
+                                        <span className="subject-class-count-number">{unitsByClass[cls.unique_string_id].length}</span> units
+                                    </p>
+                                )
+                            ) : (
+                                <p className="subject-class-count">
+                                    <span className="subject-class-count-number">0</span> units
+                                </p>
+                            )}
+                            <button className="add-class-button" title="Add a unit" onClick={() => toggleAddForm("unit", cls)}>Add Unit</button>
                         </div>
                     </div>
                 ))}

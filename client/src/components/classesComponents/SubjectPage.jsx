@@ -54,7 +54,7 @@ export default function SubjectPage({ subjectId }) {
         const classesRes = await fetch(`/api/classes/${subjectId}`);
         let classesData = await classesRes.json();
 
-        console.log(classesData)
+        // console.log(classesData)
         classesData.sort((a, b) => a.class_index - b.class_index);
 
         setClasses(classesData);
